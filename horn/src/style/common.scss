@@ -2,18 +2,6 @@
 @import './preset.scss';
 
 /*
-* iphone5 (320*568)
-*/
-$scale:2.34375rpx;
-
-/*
-  适配单位转换
-*/
-@function cr($number){
-  @return ($number * $scale)
-}
-
-/*
 * 浮动布局
 */
 @mixin flex_row{
@@ -36,3 +24,5 @@ $scale:2.34375rpx;
   height: $height;
   width: $width;
 }
+
+$index_font_size: cr(20); //首页标题字体大小

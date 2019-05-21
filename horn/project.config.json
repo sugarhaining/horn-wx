@@ -11,6 +11,8 @@
 	"compileType": "miniprogram",
 	"appid": "wx2ca9e25aa9b4246a",
 	"projectname": "horn",
+	"simulatorType": "wechat",
+	"simulatorPluginLibVersion": {},
 	"condition": {
 		"search": {
 			"current": -1,

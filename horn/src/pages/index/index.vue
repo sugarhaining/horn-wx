@@ -1,5 +1,5 @@
 <template>
-<div class='main-wrap'>
+<div class='main-wrap bg-img'>
     <tab-swiper></tab-swiper>
 </div>
 </template>

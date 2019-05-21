@@ -1,7 +1,16 @@
 {
-  "pages": [
+  "pages": [  
     "pages/index/main",
-    "pages/logs/main"  ],
+    "pages/manager/main",
+    "pages/open/main",
+    "pages/reply/main",
+    "pages/add/main",
+    "pages/lost/main",
+    "pages/account/main",
+    "pages/release/main",
+    "pages/login/main",
+    "pages/retrieve/main"
+  ],
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",

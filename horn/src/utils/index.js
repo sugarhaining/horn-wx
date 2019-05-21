@@ -1,5 +1,3 @@
-const FILE_PATH = 'http://localhost:8080';
-
 function getUserInfo () {
   return new Promise ((resolve, reject) => {
     wx.getUserInfo ({
@@ -31,18 +29,32 @@ function scanCode () {
   content：模态框内容主体
 }
 */
-function showModal (title, content='') {
-  wx.showModal ({
-    title,
-    content,
+function showModal (title, content = '') {
+  return new Promise ((resolve, reject) => {
+    wx.showModal ({
+      title,
+      content,
+      success: res => resolve (res),
+      fail: err => reject (err),
+    });
   });
 }
 
-function showToast (title = '提示', icon = 'none', duration = 1500) {
-  wx.showToast ({
-    title,
-    icon,
-    duration,
+function showToast (
+  title = '提示',
+  icon = 'none',
+  mask = false,
+  duration = 1500
+) {
+  return new Promise ((resolve, reject) => {
+    wx.showToast ({
+      title,
+      icon,
+      mask,
+      duration,
+      success: res => resolve (res),
+      fail: err => reject (err),
+    });
   });
 }
 /* 
@@ -52,17 +64,6 @@ function showToast (title = '提示', icon = 'none', duration = 1500) {
 }
 */
 function jumpTo (url, params = {}) {
-  function paramsChange (params) {
-    if (params === undefined) {
-      return '';
-    }
-    let str = '?';
-    Object.keys (params).forEach (item => {
-      str += `${item}=${params[item]}&`;
-    });
-    str = str.slice (0, -1);
-    return str;
-  }
   wx.navigateTo ({
     url: `${url}${paramsChange (params)}`,
   });
@@ -88,6 +89,18 @@ function request({url, method = 'GET', data = {}, dataType = 'json'}) {
   });
 }
 
+function paramsChange (params) {
+  if (params === undefined) {
+    return '';
+  }
+  let str = '?';
+  Object.keys (params).forEach (item => {
+    str += `${item}=${params[item]}&`;
+  });
+  str = str.slice (0, -1);
+  return str;
+}
+
 /* 
   检查用户授权情况
 */
@@ -100,11 +113,57 @@ function checkScope () {
   });
 }
 
+function switchTab (path) {
+  wx.switchTab ({
+    url: path,
+  });
+}
 
-function switchTab(path){
-  wx.switchTab({
-    url:path
+function redirectTo (url, params = {}) {
+  wx.redirectTo ({
+    url: `${url}${paramsChange (params)}`,
+  });
+}
+
+function preview (path) {
+  wx.previewImage ({
+    urls: path,
+  });
+}
+
+function setClipboardData (data) {
+  return new Promise ((resolve, reject) => {
+    wx.setClipboardData ({
+      data,
+      success: res => resolve (res),
+      fail: err => reject (err),
+    });
+  });
+}
+
+function chooseImage(count=1){
+  return new Promise((resolve,reject)=>{
+    wx.chooseImage({
+      count,
+      sizeType: ['original', 'compressed'],
+      sourceType: ['album', 'camera'],
+      success:res=>resolve(res)
+    })
   })
+}
+
+function setStorageSync(data){
+  return new Promise((resolve,reject)=>{
+    wx.setStorageSync({
+      ...data,
+      success:res=>resolve(res),
+      fail:err=>reject(err)
+    })
+  })
+}
+
+function getStorageSync(key){
+  return wx.getStorageSync(key)
 }
 
 export {
@@ -116,5 +175,11 @@ export {
   jumpTo,
   switchTab,
   request,
-  checkScope
+  checkScope,
+  redirectTo,
+  preview,
+  setClipboardData,
+  chooseImage,
+  setStorage,
+  getStorageSync
 };

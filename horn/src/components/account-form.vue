@@ -32,6 +32,7 @@
 <script>
 import sButton from './s-button.vue'
 import {showToast} from '@/utils/index'
+import {registe} from '@/apis/manager'
 export default {
   data () {
     return {
@@ -59,10 +60,11 @@ methods:{
     hidden(){
         this.$emit('hidden')
     },
-    updateData(){
+    updateData(id){
         this.$emit('update',{
-            account:this.account_value,
-            mana_user:this.remark_value
+            manaPhone:this.account_value,
+            manaRemark:this.remark_value,
+            manaId:id
         })
     },
     format_account(){
@@ -92,7 +94,7 @@ methods:{
             }
         }
     },
-    submit(){
+    async submit(){
         this.startFormat=true;
         if(true){
             if(this.account_value===''){
@@ -112,9 +114,22 @@ methods:{
             this.account.format=true;
             return false;
         }
-        showToast('成功','success');
-        this.hidden()
-        this.updateData()
+        try{
+            let res=await registe({
+                manaPhone:this.account_value,
+                manaPass:this.password_value,
+                manaRemark:this.remark_value
+            })
+            if(res.data.errcode===0){
+                showToast('成功','success');
+                this.hidden()
+                this.updateData(res.data.manaId)
+            }else if(res.data.errcode===20003){
+                showToast('账号已存在')
+            }
+        }catch(e){
+            showToast('添加失败，请稍后重试')
+        }
     }
 }
 }

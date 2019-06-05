@@ -2,8 +2,8 @@
 <div class='main-wrap'>
     <div class='input-box'>
         <input type='text' :placeholder='broadcast[index]' class='input' maxlength='15' v-model="searchMsg" @focus='stopInterval' @blur='broadcastChange'>
+        <button class='search-btn' @click='searchInfo'>搜索</button>
     </div>
-    <button class='search-btn' @click='searchInfo'>搜索</button>
 </div>
 </template>
 
@@ -22,21 +22,20 @@ export default {
     },
     methods: {
         broadcastChange() {
-            let that = this;
             this.timer = setInterval(() => {
-                if (that.index < that.broadcast.length - 1) {
-                    that.index++;
+                if (this.index < this.broadcast.length - 1) {
+                    this.index++;
                 } else {
-                    that.index = 0;
+                    this.index = 0;
                 }
-                that.searchMsg = that.broadcast[that.index];
+                this.searchMsg = this.broadcast[this.index];
             }, 4000);
         },
         searchInfo() {
-            console.log(this.searchMsg);
-            showToast(this.searchMsg, 'loading');
+            this.$emit('update',this.searchMsg)
         },
         stopInterval() {
+            this.searchMsg=''
             clearInterval(this.timer)
         }
     },
@@ -56,13 +55,14 @@ export default {
     justify-content: space-between;
 
     .input-box {
-        width: 70%;
+        width: 94%;
         height: cr(35);
+        @include flex_row;
 
         .input {
+            width: 75%;
             font-size: cr(12);
-            border: 1px solid rgba(187, 187, 187, 1);
-            border-radius: cr(5);
+            border-radius: cr(5) 0 0 cr(5);
             text-align: left;
             height: 100%;
             color: #888888;
@@ -70,27 +70,24 @@ export default {
             padding: 0 cr(5);
             box-sizing: border-box;
         }
-    }
+        .search-btn {
+            height: cr(35);
+            width: 25%;
+            font-size: cr(12);
+            line-height: cr(35);
+            border-radius: 0 cr(5) cr(5) 0;
+            background-color: white;
+            color: #000;
+            z-index: 999;
 
-    .search-btn {
-        height: cr(32);
-        width: cr(60);
-        font-size: cr(12);
-        line-height: cr(35);
-        border-radius: cr(5);
-        margin-top: cr(1);
-        padding: 0;
-        background-color: white;
-        color: #000;
-        z-index: 999;
+            &:after {
+                content: '';
+                display: none;
+            }
 
-        &:after {
-            content: '';
-            display: none;
-        }
-
-        &:active {
-            background-color: #CCCCCC;
+            &:active {
+                background-color: #CCCCCC;
+            }
         }
     }
 }

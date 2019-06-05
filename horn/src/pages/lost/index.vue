@@ -7,15 +7,15 @@
     <header class="header">喇叭失物招领</header>
     <div class="main">
         <div class="item" v-for="(list,index) in data" :key="index">
-            <div class="tag">{{list.tag}}</div>
-            <image mode='center' src="http://img95.699pic.com/photo/50029/4476.jpg_wh300.jpg" @click="preview('http://img95.699pic.com/photo/50029/4476.jpg_wh300.jpg')"></image>
+            <div class="tag">{{list.lostTag}}</div>
+            <image mode='center' src="http://prxyk9xwq.bkt.clouddn.com/tmp/wx2ca9e25aa9b4246a.o6zAJs3d1ga_bSFnpNWjScWB873I.4qOpNAF0kL0w69d42973a55d0d19a9b65e8660e88b4d.png"></image>
             <div class="right">
-                <div class="list-content" @click="showInfo(list.content)">{{list.content}}</div>
+                <div class="list-content">{{list.lostDescription}}</div>
                 <div class="btn" @click="jump(list)">
                     <s-button value='我是失主' :border='border' size='small' :font='font'></s-button>
                 </div>
                 <div class="time">
-                    {{list.timeStamp}}
+                    {{list.lostDate}}
                 </div>
             </div>
         </div>
@@ -27,27 +27,16 @@
 import sButton from '@/components/s-button.vue'
 import infoDetail from '@/components/info-detail.vue'
 import addBtn from '@/components/add-btn.vue'
-import {preview,jumpTo} from '@/utils/index'
+import {jumpTo,showToast} from '@/utils/index'
+import {getPageIndexes,getLostsInfo} from '@/apis/lost'
 export default {
     data() {
         return {
             infoShow:false,
-            currText:'',
-            data: [{
-                    content: '在海棠门口见到的。已经放到1号楼楼管哪里惹在海棠门口见到的。已经放到1号楼楼管哪里惹在海棠门口见到的。已经放到1号楼楼管哪里惹',
-                    timeStamp: '2019.4.29',
-                    tag: '水杯',
-                    lost_contact: "qq",
-                    lost_information: "123456789",
-                },
-                {
-                    content: '在海棠门口见到的。已经放到1号楼楼管哪里惹在海棠门口见到的。',
-                    timeStamp: '2019.4.29',
-                    tag: '水杯',
-                    lost_contact: "qq",
-                    lost_information: "123456789",
-                },
-            ],
+            data: [],
+            pageIndexes:0,//总分页数
+            pageIndex:1,
+            dataFree:true,
             border: {
                 width: '1',
                 type: 'solid',
@@ -63,22 +52,55 @@ export default {
         sButton,infoDetail,addBtn
     },
     methods:{
-        preview(path){
-            preview([path])
-        },
-        showInfo(text){
-            this.currText=text;
-            this.infoShow=true;
-        },
-        hiddenInfo(){
-            this.infoShow=false;
-        },
         jump(list){
             jumpTo('/pages/retrieve/main',list)
         },
         addLost(){
             jumpTo('/pages/open/main')
+        },
+        async _getPageIndexes(){
+            try{
+                let res=await getPageIndexes({amount:7})
+                this.pageIndexes=res.data.indexNumber
+            }catch(e){
+
+            }
+        },
+        async _getLosts(){
+                try{
+                    let res=await getLostsInfo({pageIndex:this.pageIndex++});
+                    this.data=res.data;
+                    this._initInfoContent()
+                }catch(e){
+
+                }
+        },
+        _initInfoContent(){
+            this.data.forEach(item=>{
+                item.content=item.content.length>20?item.content.slice(0,20)+'...':item.content;
+            })
+        },
+        async _getBottomLosts(){
+            if(this.pageIndex<=this.pageIndexes){
+                let res=await getLostsInfo({pageIndex:this.pageIndex++});
+                this.data=this.data.concat(res.data)
+                this._initInfoContent()
+            }else{
+                showToast('没有更多数据了')
+                this.dataFree=false;
+            }
         }
+    },
+    onReachBottom(){
+        if(this.dataFree){
+            this._getBottomLosts()
+        }
+    },
+    async onShow(){
+        this.pageIndex=1;
+        this.dataFree=true;
+        await this._getPageIndexes();
+        await this._getLosts()
     }
 }
 </script>
@@ -107,7 +129,7 @@ export default {
 
         .item {
             width: 100%;
-            height: cr(140);
+            height: cr(160);
             background-color: rgba(255,255,255,0.64);
             border-radius: cr(6);
             box-shadow: cr(1) cr(3) cr(30) cr(5) rgba(187,187,187,0.64);
@@ -133,22 +155,22 @@ export default {
                 background-color: red;
             }
             >image{
-                width: cr(150);
-                height: cr(120);
+                width: cr(140);
+                height: cr(140);
                 border-radius: cr(2);
             }
             .right{
                 flex: 2;
-                margin-left: cr(4);
+                margin-left: cr(10);
                 @include flex_column;
                 .list-content{
-                    padding: cr(10) 0 0 0;
+                    padding: cr(20) cr(10);
                     box-sizing: border-box;
                     height: cr(80);
                     overflow: hidden;
                 }
                 .btn,.time{
-                    margin-top: cr(5);
+                    margin-top: cr(10);
                     align-self: flex-start;
                 }
                 .time{

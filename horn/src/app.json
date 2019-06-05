@@ -1,15 +1,16 @@
 {
-  "pages": [  
+  "pages": [ 
     "pages/index/main",
-    "pages/manager/main",
-    "pages/open/main",
-    "pages/reply/main",
-    "pages/add/main",
     "pages/lost/main",
-    "pages/account/main",
-    "pages/release/main",
+    "pages/retrieve/main",
+    "pages/manager/main", 
     "pages/login/main",
-    "pages/retrieve/main"
+    "pages/account/main",
+    "pages/open/main",
+    "pages/cutImage/main",
+    "pages/release/main",
+    "pages/add/main",
+    "pages/reply/main"
   ],
   "window": {
     "backgroundTextStyle": "light",

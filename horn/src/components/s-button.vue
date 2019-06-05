@@ -67,11 +67,11 @@ export default {
 
 <style lang="scss" scoped>
 .main {
-    height: cr(30);
+    height: cr(25);
     color: #064969;
     border: 1px solid rgba(6, 73, 105, 1);
     border-radius: cr(4);
-    line-height: cr(30);
+    line-height: cr(25);
     font-size: cr(12);
     padding: 0 cr(5);
     text-align: center;

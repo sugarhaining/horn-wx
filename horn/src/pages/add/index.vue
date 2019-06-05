@@ -17,9 +17,6 @@
            <div class="btn" @click="add">
              <s-button value='添加' size='small'></s-button>
            </div>
-           <div class="btn" @click="jump">
-             <s-button value='返回' size='small'></s-button>
-           </div>
          </div>
      </div>
    </div>
@@ -28,7 +25,8 @@
 <script>
 import sTextarea from '@/components/s-textarea.vue'
 import sButton from '@/components/s-button.vue'
-import {redirectTo,showToast} from '@/utils/index'
+import {showToast} from '@/utils/index'
+import {addQuestions} from '@/apis/manager'
 export default {
   data () {
     return {
@@ -46,16 +44,26 @@ methods:{
   answer_change(value){
     this.answer_value=value;
   },
-  add(){
+  async add(){
     if(this.question_value==='' || this.answer_value===''){
       showToast('问题或回答不能为空')
       return false;
     }
-    showToast('恭喜，添加成功','success')
-    //请求
-  },
-  jump(){
-    redirectTo('/pages/manager/main')
+    try{
+        let res=await addQuestions({
+            repoQuestion:this.question_value,
+            repoAnswer:this.answer_value
+        })
+        if(res.data.errcode===0){
+            showToast('添加成功','success')
+        }else{
+            showToast('添加失败')
+        }
+    }catch(e){
+
+    }
+    this.question_value='';
+    this.answer_value=''
   }
 }
 }
@@ -77,6 +85,6 @@ methods:{
     width: 80%;
     margin: cr(30) 0 cr(20);
     @include flex_row;
-    justify-content: space-between;
+    justify-content: center;
   }
 </style>

@@ -5,18 +5,15 @@
         <div class="main">
             <span class="title">目前的管理员:</span>
             <div class="lists">
-                <div class="list-item" v-for="(list,index) in data" :key="index">
-                    <div class="account">{{list.account}}</div>
-                    <div class="user">{{list.mana_user}}</div>
-                    <img src="/static/icons/delete.png" @click="remove">
+                <div class="list-item" v-for="(list,index) in accounts" :key="index">
+                    <div class="account">{{list.manaPhone}}</div>
+                    <div class="user">{{list.manaRemark}}</div>
+                    <img src="/static/icons/delete.png" @click="remove(list,index)">
                 </div>
                 </div>
                 <div class="btn-nav">
                     <div class="btn-wrap" @click="add">
                         <s-button value='添加' size='small'></s-button>
-                    </div>
-                    <div class="btn-wrap" @click="jump">
-                        <s-button value='返回' size='small'></s-button>
                     </div>
                 </div>
             </div>
@@ -28,15 +25,13 @@
 import sButton from '@/components/s-button.vue'
 import accountForm from '@/components/account-form.vue'
 import {
-    redirectTo
+    showToast
 } from '@/utils/index'
+import {getManagersInfo,deleteManage} from '@/apis/manager'
 export default {
     data() {
         return {
-            data:[{
-                account: 18710815240,
-                mana_user: '小喇叭1号'
-            }],
+            accounts:[],
             showForm: false
         }
     },
@@ -45,22 +40,31 @@ export default {
         accountForm
     },
     methods: {
-        jump() {
-            redirectTo('/pages/manager/main')
-        },
         add() {
             this.showForm=true;
         },
         update(value){
-            this.data.push(value)
-            console.log(value)
+            this.accounts.push(value)
         },
-        remove() {
-
+        async remove(list,index) {
+            try{
+                let res=await deleteManage({manaId:list.manaId})
+                this.accounts.splice(index,1)
+                showToast('删除成功','success')
+            }catch(e){
+                showToast('删除失败,请重试')
+            }
         },
         hiddenForm(){
             this.showForm=false;
+        },
+        async _initData(){
+            let res=await getManagersInfo();
+            this.accounts=res.data
         }
+    },
+    onLoad(){
+        this._initData()
     }
 }
 </script>
@@ -128,7 +132,7 @@ export default {
         width: 70%;
         @include flex_row;
         margin-top: cr(15);
-        justify-content: space-between;
+        justify-content: center;
     }
 }
 </style>

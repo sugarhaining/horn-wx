@@ -1,21 +1,19 @@
 <template>
 <div class="main-wrap bg-img">
+    <authorize @cancel='hidden' v-if="!ifAuthorize"></authorize>
     <div class="float-modal">
         <div class="textarea-item">
-            <s-textarea placeholder="请输入你的问题" @change="change" maxlength=25></s-textarea>
+            <s-textarea placeholder="请输入你的问题" @change="change" maxlength=40></s-textarea>
         </div>
         <div class="horn-msg">
             <img src="/static/images/2fdda3cc7cd98d10ae46f020233fb80e7bec9015.png">
-            <div class="msg">{{horn_msg}}</div>
+            <div class="msg">喇叭会尽快从通知助手处回复你哦！</div>
         </div>
-        <div class="horn-btn">
-            <div class="btn-wrap" @click="sendMessage">
-                <s-button value='留言' size='small'></s-button>
+        <form class="horn-btn" @submit='sendMessage' report-submit='true' >
+            <div class="btn-wrap">
+                <button form-type="submit">留言</button>
             </div>
-            <div class="btn-wrap" @click="returnPage">
-                <s-button value='返回' size='small'></s-button>
-            </div>
-        </div>
+        </form>
     </div>
 </div>
 </template>
@@ -23,44 +21,87 @@
 <script>
 import sTextarea from '../../components/s-textarea.vue'
 import sButton from '@/components/s-button.vue'
+import authorize from '../../components/authorize'
 import {
-    redirectTo,
-    showToast
+    showToast,
+    checkScope,
+    getStorageSync,
+    showLoading,
+    hideLoading
 } from '@/utils/index'
 import {
     setInterval,
     setTimeout
 } from 'timers';
+import {postQuestion} from '@/apis/users'
+import { jumpTo } from '../../utils';
 export default {
     components: {
-        sTextarea,sButton
+        sTextarea,sButton,authorize
     },
-
     data() {
         return {
             textAreaValue: '',
-            horn_msg: '喇叭会尽快从通知助手处回复你哦！',
-            timer: null
+            timer: null,
+            ifAuthorize:true
         }
     },
     methods: {
+        async _checkscope(){
+            showLoading('检查授权中')
+            try{
+                let res=await checkScope();
+                hideLoading()
+                if(!res.authSetting['scope.userInfo']){
+                    this.ifAuthorize=false;
+                }
+            }catch(e){
+
+            }
+        },
         change(value) {
             this.textAreaValue = value;
         },
-        sendMessage() {
-            //请求发送
+        async sendMessage(e) {
             if(this.textAreaValue===''){
                 showToast('留言内容不能为空哦');
                 return false;
             }
-            showToast('发布成功', 'success',true).then(res => {
-                this.timer = setTimeout(this.returnPage, 2000)
-            })
+            try{
+                let res=await postQuestion({
+                    quesQuestion:this.textAreaValue,
+                    userName:this.userInfo.nickName,
+                    userImage:this.userInfo.avatarUrl,
+                    sessionId:this.sessionid,
+                    formId:e.target.formId
+                })
+                if(res.data.errcode===0){
+                    showToast('发布成功', 'success')
+                }else if(res.data.errcode===20009){
+                    showToast('已有人问过此问题')
+                }else{
+                    showToast('发布失败')
+                }
+            }catch(e){
+
+            }
+        },
+        _initUser(){
+            this.sessionid=getStorageSync('sessionId') || '';
+            this.userInfo=getStorageSync('userInfo')
         },
         returnPage() {
             this.timer = null;
-            redirectTo('/pages/index/main')
+        }, 
+        hidden(){
+            this.ifAuthorize=true;
         }
+    },
+    onLoad(){
+        this._checkscope()//用户授权检查
+    },
+    onShow(){
+        this._initUser()
     }
 }
 </script>
@@ -118,8 +159,22 @@ export default {
         .horn-btn {
             width: 70%;
             @include flex_row;
-            justify-content: space-between;
+            justify-content: center;
             margin: cr(60) 0 cr(20);
+            button{
+                width: cr(60);
+                height: cr(25);
+                color: #064969;
+                border: 1px solid rgba(6, 73, 105, 1);
+                border-radius: cr(4);
+                line-height: cr(25);
+                font-size: cr(12);
+                padding: 0 cr(5);
+                &:after{
+                    content:'';
+                    display:none;
+                }
+            }
         }
     }
 }

@@ -33,9 +33,6 @@
           <div class="btn" @click="open">
             <s-button value='发布' size='small'></s-button>
           </div>
-          <div class="btn" @click="jump">
-            <s-button value='返回' size='small'></s-button>
-          </div>
         </div>
     </div>
 </div>
@@ -45,11 +42,13 @@
 import sTextarea from '@/components/s-textarea.vue'
 import sButton from '@/components/s-button.vue'
 import {
-    redirectTo,
     showToast,
     chooseImage,
+    jumpTo
 } from '@/utils/index'
-import { showModal } from '../../utils';
+import { redirectTo} from '../../utils'
+import {postReleaseLosts} from '@/apis/lost'
+import qiNiuUpload from '@/apis/qiniu'
 export default {
     data() {
         return {
@@ -70,7 +69,7 @@ export default {
       updateContact(e){
         this.waysIndex=e.mp.detail.value
       },
-      open(){
+      async open(){
         if(this.detail_value===''){
           showToast('请输入失物描述信息');
           return false;
@@ -79,18 +78,27 @@ export default {
           showToast('请提供失物有效图片')
           return false;
         }
-        showToast('发布成功')
-      },
-      jump(){
-        redirectTo('/pages/lost/main')
+        console.log('imgurls',this.imgUrls[0])
+        try{
+            let res=await qiNiuUpload(this.imgUrls[0])
+            console.log(res)
+            let res1= await postReleaseLosts({
+                lostDescription:this.detail_value,
+                lostImage:'',
+                lostTag:this.tags[tagsIndex],
+                lostContact:this.waysIndex===0?'':this.ways[waysIndex],
+                lostInformation:this.contact_way
+            })
+            showToast('发布成功')
+        }catch(e){
+                
+        }
       },
       detail(value){
         this.detail_value=value;
       },
       chooseImage(){
-        chooseImage(1).then(res=>{
-          this.imgUrls=res.tempFilePaths;
-        })
+        redirectTo('/pages/cutImage/main')
       },
       remove(index){
         this.imgUrls.splice(index,1)
@@ -98,7 +106,12 @@ export default {
     },
     components: {
         sButton,
-        sTextarea
+        sTextarea,
+    },
+    onShow(){
+        if(this.$mp.query.src){
+            this.imgUrls.push(this.$mp.query.src)
+        }
     }
 }
 </script>
@@ -187,7 +200,7 @@ export default {
     .btn-nav{
       width: 80%;
       @include flex_row;
-      justify-content: space-between;
+      justify-content: center;
       margin: cr(30) 0 cr(10);
     }
 }

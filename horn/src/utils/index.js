@@ -141,31 +141,84 @@ function setClipboardData (data) {
   });
 }
 
-function chooseImage(count=1){
-  return new Promise((resolve,reject)=>{
-    wx.chooseImage({
+function chooseImage (count = 1) {
+  return new Promise ((resolve, reject) => {
+    wx.chooseImage ({
       count,
       sizeType: ['original', 'compressed'],
       sourceType: ['album', 'camera'],
-      success:res=>resolve(res)
-    })
-  })
+      success: res => resolve (res),
+      fail: err => reject (err),
+    });
+  });
 }
 
-function setStorageSync(data){
-  return new Promise((resolve,reject)=>{
-    wx.setStorageSync({
+function setStorageSync (key, data) {
+  wx.setStorageSync (key, data);
+}
+
+function getStorageSync (key) {
+  return wx.getStorageSync (key);
+}
+
+function login () {
+  return new Promise ((resolve, reject) => {
+    wx.login ({
+      success: res => resolve (res),
+      fail: err => reject (err),
+    });
+  });
+}
+
+function showLoading (title = '请稍等') {
+  wx.showLoading ({
+    title,
+  });
+}
+
+function hideLoading () {
+  wx.hideLoading ();
+}
+
+function getImageInfo (src) {
+  return new Promise ((resolve, reject) => {
+    wx.getImageInfo ({
+      src,
+      success: res => resolve (res),
+      fail: err => reject (err),
+    });
+  });
+}
+
+function canvasToTempFilePath (data) {
+  return new Promise ((resolve, reject) => {
+    wx.canvasToTempFilePath ({
       ...data,
-      success:res=>resolve(res),
-      fail:err=>reject(err)
+      success: res => resolve (res),
+      fail: err => reject (err),
+    });
+  });
+}
+
+function saveImageToPhotosAlbum (filePath) {
+  return new Promise ((resolve, reject) => {
+    wx.saveImageToPhotosAlbum ({
+      filePath,
+      success: res => resolve (res),
+      fail: err => reject (err),
+    });
+  });
+}
+
+function downLoadFile(url){
+    return new Promise((resolve,reject)=>{
+        wx.downloadFile({
+            url,
+            success:res=>resolve(res),
+            fail:err=>reject(err)
+        })
     })
-  })
 }
-
-function getStorageSync(key){
-  return wx.getStorageSync(key)
-}
-
 export {
   getUserInfo,
   scanCode,
@@ -180,6 +233,13 @@ export {
   preview,
   setClipboardData,
   chooseImage,
-  setStorage,
-  getStorageSync
+  getStorageSync,
+  setStorageSync,
+  login,
+  showLoading,
+  hideLoading,
+  getImageInfo,
+  canvasToTempFilePath,
+  saveImageToPhotosAlbum,
+  downLoadFile
 };

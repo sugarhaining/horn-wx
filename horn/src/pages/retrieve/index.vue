@@ -1,10 +1,12 @@
 <template>
    <div class='main-wrap bg-img'>
      <div class="float-modal">
-        <img src="http://img95.699pic.com/photo/50029/4476.jpg_wh300.jpg" @click="preview('http://img95.699pic.com/photo/50029/4476.jpg_wh300.jpg')">
-        <div class="content">{{info.content}}</div>
+         <div class="title">
+             <img :src="info.lostImage">
+             {{info.lostDescription}}
+         </div>
         <div class="contact">
-            <div>联系方式:<span>{{info.lost_contact}}:{{info.lost_information}}</span></div>
+            <div>联系&nbsp;{{info.lostContact}}:<span>{{info.lostInformation}}</span></div>
             <div class="btn" @click.stop="copy">
                 <s-button value='复制' size='small'></s-button>
             </div>
@@ -16,48 +18,63 @@
             <div class="btn" @click="retrieve">
                 <s-button value='已取回,删除失物' size='large'></s-button>
             </div>
-            <div class="btn" @click="jump">
-                <s-button value='返回' size='small'></s-button>
+            <div class="share-btn" @click="showCanvas">
+                <s-button value='点击分享' size='small'></s-button>
             </div>
         </div>
      </div>
+     <share-canvas v-if="ifCanvasShow" @cancel='hiddenCanvas' page='retrieve' :info='info'></share-canvas>
    </div>
 </template>
 
 <script>
-import {preview,redirectTo,setClipboardData,showModal} from '@/utils/index'
+import {preview,setClipboardData,showModal,getStorageSync} from '@/utils/index'
 import sButton from '@/components/s-button.vue'
+import shareCanvas from '@/components/share-canvas'
+import {deleteLosts} from '@/apis/lost'
+import { showToast } from '../../utils';
 export default {
-  data () {
+  data () { 
     return {
-        info:null
+        info:null,
+        sessionid:'',
+        ifCanvasShow:false
     }
   },
   methods:{
-      preview(path){
-          preview([path])
+      hiddenCanvas(){
+          this.ifCanvasShow=false;
+      },
+      showCanvas(){
+          this.ifCanvasShow=true;
       },
       retrieve(){
-        showModal('提示','确认删除失物？').then(res=>{
-            console.log(res)
+        showModal('提示','确认删除失物？').then(async res=>{
             if(res.confirm){
-                //取回操作
-            }else if(res.cancel){
-
+                let res=await deleteLosts({
+                    lostId:this.info.lostId,
+                    sessionId:this.sessionid
+                })
+                if(res.data.errcode===20008){
+                    showToast('一天最多删除两次失物哦')
+                }else{
+                    showToast('删除成功','success')
+                }
             }
         })
       },
-      jump(){
-          redirectTo('/pages/lost/main')
-      },
       copy(){
-          setClipboardData(this.info.lost_information)
+          setClipboardData(this.info.lostInformation)
+      },
+      _getLocalSession(){
+          this.sessionid=getStorageSync('sessionid') || 'free sessionid'
       }
   },
   components:{
-      sButton
+      sButton,shareCanvas
   },
-    onLoad(){
+    onShow(){
+        this._getLocalSession()
         this.info=this.$mp.query;
     }
 }
@@ -66,20 +83,28 @@ export default {
 <style lang='scss' scoped>
   .float-modal{
     font-size: cr(12);
-      >img{
-          width: 86%;
-          height: cr(140);
-          border-radius: cr(6);
-          margin-top: cr(-10);
+    padding: cr(10);
+    box-sizing: border-box;
+    min-height: cr(400);
+    .title{
+        padding: cr(10);
+        box-sizing: border-box;
+        >img{
+          width: cr(80);
+          height: cr(80);
+          border-radius: cr(4);
+          margin: {
+              right: cr(15);
+              bottom: cr(5); 
+          }
+          float: left;
       }
-      .content{
-          width: 94%;
-          margin: cr(10);
-      }
+    }
       .contact{
           width: 94%;
-          margin-top: cr(10);
+          margin-top: cr(20);
           @include flex_row;
+          justify-content: space-between;
           >div:first-child>span{
               margin-left: cr(5);
               color: #CCCCCC; 
@@ -89,15 +114,16 @@ export default {
           }
       }
       .error-info{
-          font-size: cr(14);
+          font-size: cr(12);
           color: red; 
-          height: cr(80);
-          line-height: cr(80);
+          height: cr(160);
+          line-height: cr(160);
+          width: 94%;
       }
       .btn-nav{
           width: 94%;
           @include flex_row;
-          justify-content: space-between;
+          justify-content: space-around;
           margin-bottom: cr(20);
       }
   }

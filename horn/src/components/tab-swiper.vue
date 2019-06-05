@@ -11,20 +11,21 @@
     <div class='contain' :class='{"transition":isStopTouch}' :style='{left:isStopTouch?offsetLeft:rangeXUnit}'>
         <div class='item'>
             <span>喇叭搜索</span>
-            <s-input :broadcast='broadcastMsg'></s-input>
+            <s-input :broadcast='broadcastMsg' @update='search'></s-input>
             <span class='prompt-info'>
                 没搜到想要的信息?<br/>
                 点击右下角留言，喇叭会从通知助手回复你
             </span>
             <span class='title-text'>最新问答</span>
             <div class='message-card' v-for="(info,index) in infos" :key='index' @click.stop='toggleExpand(info)'>
-                <message-info :info='info'></message-info>
+                <message-info :info='info' @showFloat='showCanvas'></message-info>
             </div>
         </div>
         <div class='item'>
             <app-shop></app-shop>
         </div>
     </div>
+    <share-canvas v-if="ifShowCanvas" @cancel='hiddenCanvas' :info='currList' page='index'></share-canvas>
 </div>
 </template>
 
@@ -33,47 +34,15 @@ import sInput from './s-input.vue'
 import messageInfo from './message-info.vue'
 import addBtn from './add-btn.vue'
 import appShop from './app-shop.vue'
+import shareCanvas from './share-canvas'
 import {stampToDate} from '../utils/time'
-import {jumpTo} from '../utils/index'
+import {showToast, showLoading,jumpTo,hideLoading} from '../utils/index'
+import {getBrandAnswer,getSearchAnswer} from '@/apis/users'
 export default {
+    props:['autoSearch','searchId'],
     data() {
         return {
-            infos: [{
-                    question: '为什么校车停运了',
-                    answer: '因为爱情不会轻易悲伤，所同意我们都是幸福的模样，因为爱情，在那个地方，依然随时有人为你疯狂',
-                    time_stamp: 1553558400000
-                },
-                {
-                    question: '为什么校车停运了',
-                    answer: '因为爱情不会轻易悲伤，所同意我们都是幸福的模样，因为爱情，在那个地方，依然随时有人为你疯狂',
-                    time_stamp: 1553558400000
-                },
-                {
-                    question: '为什么校车停运了',
-                    answer: '因为爱情不会轻易悲',
-                    time_stamp: 1553558400000
-                },
-                {
-                    question: '为什么校车停运了',
-                    answer: '因为爱情',
-                    time_stamp: 1553558400000
-                },
-                {
-                    question: '为什么校车停运了',
-                    answer: '因为爱情',
-                    time_stamp: 1553558400000
-                },
-                {
-                    question: '为什么校车停运了',
-                    answer: '因为爱情',
-                    time_stamp: 1553558400000
-                },
-                {
-                    question: '为什么校车停运了',
-                    answer: '因为爱情',
-                    time_stamp: 1553558400000
-                }
-            ],
+            infos: [],
             startX: 0, //触屏动作起点坐标
             startY: 0,
             rangeX: 0, //触屏距离净数字
@@ -84,16 +53,44 @@ export default {
             currPageIndex: 0, //当前tab页索引
             pages: 2, //tab的数量
             isStopTouch: true, //滑屏是否结束
-            broadcastMsg: ['五一放假', '想喇叭了吗', '期末考试', '校车安排', '空教室预约']
+            broadcastMsg: ['五一放假', '想喇叭了吗', '为之工作室', '校车安排', '空教室预约'],
+            pageIndex:1,
+            ifShowCanvas:false,
+            currList:null,
+            autoSearchInfo:''
         }
     },
     components: {
         sInput,
         messageInfo,
         addBtn,
-        appShop
+        appShop,
+        shareCanvas
     },
     methods: {
+        async search(value){
+            showLoading('搜索中')
+            let res=await getSearchAnswer({
+                keyword:value
+            })
+            console.log(res)
+            hideLoading()
+        },
+        async _autoSearch(id){
+            showLoading('搜索中')
+            let res=await getSearchAnswer({
+                number:id
+            })
+            console.log(res)
+            hideLoading()
+        },
+        showCanvas(value){
+            this.currList=value;
+            this.ifShowCanvas=true;
+        },
+        hiddenCanvas(){
+            this.ifShowCanvas=false;
+        },
         initX(e) {
             this.startX = e.clientX;
             this.startY = e.clientY;
@@ -109,7 +106,7 @@ export default {
         },
         toggleExpand(info){
             if(info.expand===false){
-                info.show_answer=info.answer;
+                info.show_answer=info.repoAnswer;
                 info.expand=true;
             }else{
                 info.show_answer=info.slice_answer;
@@ -155,14 +152,35 @@ export default {
                 this.$set(info,'show_answer','');
                 this.$set(info,'slice_answer','');
                 this.$set(info,'expand',false);
-                info.time=stampToDate(info.time_stamp);
-                info.slice_answer=info.answer.length>=17?info.answer.slice(0,17)+'...':info.answer;
+                info.time=stampToDate(info.repoDate);
+                info.slice_answer=info.repoAnswer.length>=52?info.repoAnswer.slice(0,52)+'...':info.repoAnswer;
                 info.show_answer=info.slice_answer;
             });
-        }
+        },
+        async _getAnswers(){
+            if(this.currPageIndex===0){
+                try{
+                    let res=await getBrandAnswer({
+                        pageIndex:this.pageIndex
+                    });
+                    this.infos=res.data;
+                    this._initInfos()
+                }catch(e){
+                    
+                }
+            }
+        },
     },
-    onLoad(){
-        this._initInfos();
+    async onShow(){
+        this.pageIndex=1;
+        await this._getAnswers()
+    },
+    async onLoad(){
+        if(this.autoSearch){
+            await this._autoSearch(this.searchId)
+        }else{
+            await this._getAnswers()
+        }
     }
 }
 </script>
@@ -251,6 +269,7 @@ export default {
 
         .message-card {
             margin-top: cr(10);
+            margin-bottom: cr(10);
             box-sizing: border-box;
             width: 90%;
         }

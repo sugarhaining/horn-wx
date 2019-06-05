@@ -7,13 +7,31 @@ export default {
     props: ['placeholder','maxlength'],
     data() {
         return {
-            content:''
+            content:'',
+            timer:null
         }
     },
     methods:{
-        input(){//做函数节流处理
+        _input(){
             this.$emit('change',this.content)
-        }    
+        },
+        input(){
+            let res=this._debounce(this._input);
+            res();
+        },
+        _debounce(fn){
+            let context=this;
+            return function(){
+                let args=arguments;
+                if(context.timer){
+                    clearTimeout(context.timer);
+                    context.timer=null
+                }
+                context.timer=setTimeout(function(){
+                    fn.apply(context,args)
+                },500)
+            }
+        } 
     }
 }
 </script>

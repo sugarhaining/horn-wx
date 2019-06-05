@@ -1,15 +1,15 @@
 <template>
 <div class='main' @click="jump">
     <div class="left">
-        <img :src="info.ques_image">
+        <img :src="info.userImage">
         <div class="dots"></div>
     </div>
     <div class="right">
         <div class="top">
-            <div class="name">{{info.ques_name}}</div>
-            <div class="time">{{info.ques_date}}</div>
+            <div class="name">{{info.userName}}</div>
+            <div class="time">{{info.quesDate}}</div>
         </div>
-        <div class="bottom">{{info.ques_question}}</div>
+        <div class="bottom">{{info.quesQuestion}}</div>
     </div>
 </div>
 </template>

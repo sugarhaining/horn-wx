@@ -56,14 +56,14 @@ methods:{
         })
         if(res.data.errcode===0){
             showToast('添加成功','success')
+            this.question_value='';
+            this.answer_value=''
         }else{
             showToast('添加失败')
         }
     }catch(e){
 
     }
-    this.question_value='';
-    this.answer_value=''
   }
 }
 }

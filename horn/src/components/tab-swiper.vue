@@ -11,7 +11,9 @@
     <div class='contain' :class='{"transition":isStopTouch}' :style='{left:isStopTouch?offsetLeft:rangeXUnit}'>
         <div class='item'>
             <span>喇叭搜索</span>
-            <s-input :broadcast='broadcastMsg' @update='search'></s-input>
+            <div class="input">
+                <s-input :broadcast='broadcastMsg' @update='search'></s-input>
+            </div>
             <span class='prompt-info'>
                 没搜到想要的信息?<br/>
                 点击右下角留言，喇叭会从通知助手回复你
@@ -25,7 +27,7 @@
             <app-shop></app-shop>
         </div>
     </div>
-    <share-canvas v-if="ifShowCanvas" @cancel='hiddenCanvas' :info='currList' page='index'></share-canvas>
+    <share-canvas v-if="ifShowCanvas" @cancel='hiddenCanvas' :info='currList' page='index' :repoId='currRepoid'></share-canvas>
 </div>
 </template>
 
@@ -53,11 +55,12 @@ export default {
             currPageIndex: 0, //当前tab页索引
             pages: 2, //tab的数量
             isStopTouch: true, //滑屏是否结束
-            broadcastMsg: ['五一放假', '想喇叭了吗', '为之工作室', '校车安排', '空教室预约'],
+            broadcastMsg: [],
             pageIndex:1,
             ifShowCanvas:false,
             currList:null,
-            autoSearchInfo:''
+            autoSearchInfo:'',
+            currRepoid:0
         }
     },
     components: {
@@ -73,18 +76,23 @@ export default {
             let res=await getSearchAnswer({
                 keyword:value
             })
-            console.log(res)
             hideLoading()
+            if(res.data.length===0){
+                showToast('没有相关问答')
+            }else{
+                this.infos=res.data;
+                this._initInfos()
+            }
         },
         async _autoSearch(id){
             showLoading('搜索中')
             let res=await getSearchAnswer({
                 number:id
             })
-            console.log(res)
             hideLoading()
         },
         showCanvas(value){
+            this.currRepoid=value.repoId
             this.currList=value;
             this.ifShowCanvas=true;
         },
@@ -155,10 +163,9 @@ export default {
                 info.time=stampToDate(info.repoDate);
                 info.slice_answer=info.repoAnswer.length>=52?info.repoAnswer.slice(0,52)+'...':info.repoAnswer;
                 info.show_answer=info.slice_answer;
-            });
+            })
         },
         async _getAnswers(){
-            if(this.currPageIndex===0){
                 try{
                     let res=await getBrandAnswer({
                         pageIndex:this.pageIndex
@@ -168,19 +175,14 @@ export default {
                 }catch(e){
                     
                 }
-            }
         },
     },
     async onShow(){
         this.pageIndex=1;
         await this._getAnswers()
     },
-    async onLoad(){
-        if(this.autoSearch){
-            await this._autoSearch(this.searchId)
-        }else{
-            await this._getAnswers()
-        }
+    async onLoad(options){
+        await this._getAnswers()
     }
 }
 </script>
@@ -247,15 +249,19 @@ export default {
 
         >span {
             font-size: $index_font_size;
-            margin-bottom: cr(35);
+            margin-bottom: cr(20);
+        }
+
+        .input{
+            width: 100%;
+            margin-bottom: cr(4);
         }
 
         .prompt-info {
-            margin-top: cr(20);
             font-size: cr(12);
             text-align: left;
             line-height: cr(25);
-            margin-bottom: cr(0);
+            margin-bottom: cr(10);
         }
 
         .title-text {
@@ -263,13 +269,12 @@ export default {
             text-align: left;
             font-size: cr(12);
             color: #000;
-            margin-top: cr(10);
             margin-bottom: cr(5);
         }
 
         .message-card {
-            margin-top: cr(10);
-            margin-bottom: cr(10);
+            margin-top: cr(6);
+            margin-bottom: cr(6);
             box-sizing: border-box;
             width: 90%;
         }
@@ -286,7 +291,7 @@ export default {
 }
 
 .transition {
-    transition: all 0.5s
+    transition: all 0.2s
 }
 .add-btn {
     width: cr(50);

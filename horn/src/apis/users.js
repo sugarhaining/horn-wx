@@ -30,6 +30,16 @@ function getBrandAnswer(data){
 }
 
 
+/**
+ *获取小程序码
+ *
+ * @param {*} data
+ * @returns
+ */
+function getIndexQRCode(data){
+    return ajax(_setUrl('/users/codes'),data,'POST')
+}
+
 
 /**
  *用户搜索问答接口
@@ -78,5 +88,6 @@ export {
     getBrandAnswer,
     getSearchAnswer,
     postQuestion,
-    postLogin
+    postLogin,
+    getIndexQRCode
 }

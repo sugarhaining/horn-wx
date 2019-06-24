@@ -219,6 +219,25 @@ function downLoadFile(url){
         })
     })
 }
+
+function getSystemInfo(){
+    return new Promise((resolve,reject)=>{
+        wx.getSystemInfo({
+            success:res=>resolve(res),
+            fail:err=>reject(err)
+        })
+    })
+}
+
+function navigatorBack(delta){
+    return new Promise((resolve,reject)=>{
+        wx.navigateBack({
+            delta
+        })
+    })
+}
+
+
 export {
   getUserInfo,
   scanCode,
@@ -241,5 +260,7 @@ export {
   getImageInfo,
   canvasToTempFilePath,
   saveImageToPhotosAlbum,
-  downLoadFile
+  downLoadFile,
+  getSystemInfo,
+  navigatorBack
 };

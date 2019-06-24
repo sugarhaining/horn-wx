@@ -4,7 +4,7 @@
 
 <script>
 export default {
-    props: ['placeholder','maxlength'],
+    props: ['placeholder','maxlength','value'],
     data() {
         return {
             content:'',

@@ -1,7 +1,7 @@
 <template>
   <div class="contain">
     <img src="/static/icons/close.png" class='close-btn' @click="cancel">
-    <canvas canvas-id="shareCanvas" class="canvas"></canvas>
+    <canvas canvas-id="shareCanvas" :style="{width: width + 'px', height: height+'px'}"></canvas>
     <button @click="save" class="save-btn" :disabled='ifDisabled'>保存到手机相册</button>
   </div>
  
@@ -13,9 +13,12 @@ const questionMaxLength=15;
 const ctx = wx.createCanvasContext('shareCanvas')
 const canvasWidth=250;
 const canvasHeight=379; 
-const questionBgImage='https://www.xdxlb.xyz/images/mmexport1559632826175.jpg';
-const lostsBgImage='https://www.xdxlb.xyz/images/mmexport1559632821565.jpg';
-import {getImageInfo,showToast,canvasToTempFilePath,saveImageToPhotosAlbum,showLoading,hideLoading,downLoadFile} from '@/utils/index'
+const questionBgImage=BASEURL+'/images/mmexport1559632826175.jpg';
+const lostsBgImage=BASEURL+'/images/mmexport1559632821565.jpg';
+import {canvasToTempFilePath,saveImageToPhotosAlbum,showLoading,hideLoading,getImageInfo} from '@/utils/index'
+import {BASEURL,QINIU_BASE_URL} from '@/utils/config'
+import {getIndexQRCode} from '@/apis/users'
+import { getLostsQRCode} from '@/apis/lost'
 export default {
     props:{
         info:{
@@ -24,6 +27,9 @@ export default {
         page:{
             type:String,
             required:true
+        },
+        repoId:{
+            type:Number
         }
     },
   data () {
@@ -35,36 +41,44 @@ export default {
         showAnswer:'',
         showQuestion:'',
         showDescription:'',
-        qrCodeUrl:'http://static.yxdown.com/pc/index/images/qrcode.png'
+        width: 0,
+        height: 0,
     }
   },
     methods: {
         async _drawRetrieve(){//失物招领绘制
             showLoading('生成图片中')
+            let res1=await getLostsQRCode({lostId:1})
+            console.log(res1.data.imageUrl)
             let res=await Promise.all([
-                downLoadFile(lostsBgImage),
-                downLoadFile('http://prxyk9xwq.bkt.clouddn.com/tmp/wx2ca9e25aa9b4246a.o6zAJs3d1ga_bSFnpNWjScWB873I.4qOpNAF0kL0w69d42973a55d0d19a9b65e8660e88b4d.png'),
-                downLoadFile(this.qrCodeUrl)
+                getImageInfo(lostsBgImage),
+                getImageInfo(QINIU_BASE_URL+this.info.lostImage),
+                getImageInfo(res1.data.imageUrl)
             ])
-            ctx.drawImage(res[0].tempFilePath, 0, 0, canvasWidth, canvasHeight);
-            ctx.drawImage(res[1].tempFilePath,50,90,150,150)
+            this.width=res[0].width/3;
+            this.height=res[0].height/3;
+            ctx.drawImage(res[0].path, 0, 0, this.width, this.height);
+            ctx.drawImage(res[1].path,50,90,150,150)
             ctx.setFontSize(14)
             for(let i=0;i<this.describerArr.length;i++){
                 ctx.fillText(this.describerArr[i],45,240+(i+1)*20)
             }
             let footerStart=310
-            ctx.drawImage(res[2].tempFilePath, 138, footerStart-16, 40, 40);
+            ctx.drawImage(res[2].path, 138, footerStart-16, 40, 40);
             ctx.draw(true)
             this.ifDisabled=false;
             hideLoading()
         },
         async _drawAnswer(){//问答页面绘制
             showLoading('生成图片中');
+            let res1=await getIndexQRCode({repoId:this.repoId})
             let res=await Promise.all([
-                downLoadFile(questionBgImage),
-                downLoadFile(this.qrCodeUrl)
+                getImageInfo(questionBgImage),
+                getImageInfo(res1.data.imageUrl)
             ])
-            ctx.drawImage(res[0].tempFilePath, 0, 0, canvasWidth, canvasHeight);
+            this.width=res[0].width/3;
+            this.height=res[0].height/3;
+            ctx.drawImage(res[0].path, 0, 0, this.width, this.height);
             ctx.setFontSize(14)   
             for(let i=0;i<this.questionArr.length;i++){
                 ctx.fillText(this.questionArr[i], 20, 80+(i+1)*20)
@@ -74,7 +88,7 @@ export default {
                 ctx.fillText(this.answerArr[i], 50, 134+(i+1)*20)
             }
             let footerStart=310
-            ctx.drawImage(res[1].tempFilePath, 138, footerStart-10, 40, 40);
+            ctx.drawImage(res[1].path, 138, footerStart-15, 40, 40);
             ctx.draw(true)
             this.ifDisabled=false;
             hideLoading()
@@ -118,6 +132,9 @@ export default {
             this._initLosts()
             this._drawRetrieve()
         }
+    },
+    destroyed(){
+        hideLoading()
     }
 }
 </script>
@@ -133,11 +150,8 @@ export default {
       z-index: 1200;
       background-color: rgba(0,0,0,0.8);
       @include flex_column;
-      .canvas{
-          width: cr(250);
-          height: cr(379);
-          border: 1px solid #000;
-          background-color: rgba(255,255,255,1);
+      .canvas{ 
+          background-color: white;
       }
       .close-btn{
           width: cr(25);
@@ -152,7 +166,10 @@ export default {
           font-size: cr(14);
           line-height: cr(30);
           border: none;
-          margin-top: cr(20);
+          position: fixed;
+          bottom: cr(40);
+          left: 50%;
+          transform: translateX(-50%);
           &:after{
               content:'';
               display: none;

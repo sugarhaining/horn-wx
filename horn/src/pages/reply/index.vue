@@ -1,7 +1,7 @@
 <template>
 <div class='main-wrap bg-img'>
     <div class="float-modal">
-        <img src="https://img2.woyaogexing.com/2019/05/16/bad0de48b20c47d7bc32c2d3fef70afb!400x400.jpeg">
+        <img :src="info.userImage">
         <div class="name">{{info.userName}}</div>
         <div class="content">{{info.quesQuestion}}</div>
         <div class="text-area">
@@ -26,9 +26,11 @@
 import sTextarea from '@/components/s-textarea.vue'
 import sButton from '@/components/s-button.vue'
 import {
-    showToast
+    showToast,
+    redirectTo
 } from '@/utils/index'
 import {answerQuestions} from '@/apis/manager'
+import { navigatorBack } from '../../utils';
 export default {
     data() {
         return {
@@ -63,11 +65,15 @@ export default {
                     showToast('问题已失效');
                 }else{
                     showToast('回答成功','success')
+                    setTimeout(this._jumpManager,500)
                 }
             }catch(e){
                 showToast('回复失败，稍后重试')
             }
         },
+        _jumpManager(){
+            navigatorBack(1)
+        }
     },
     onShow() {
         this.info = this.$mp.query;

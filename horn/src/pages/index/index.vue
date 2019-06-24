@@ -15,7 +15,7 @@ export default {
         return {
             ifAuthorize:true,
             pageNumber:1,
-            autoSearch:false,
+             autoSearch:false,
             searchId:0
         }
     },
@@ -38,7 +38,6 @@ export default {
         async _login(){
             showLoading('登陆中')
             login().then(res=>{
-                console.log(res)
                 return postLogin({
                     code:res.code
                 })
@@ -53,13 +52,10 @@ export default {
             this.sessionId=getStorageSync('sessionId') || 'test sessionId'
         }
     },
-    onLoad(){
+    onLoad(options){
         this._initSessionId()
         this._checkLogin()
-        if(this.$mp.query.id){
-            this.autoSearch=true
-            this.searchId=this.$mp.query.id
-        }
+        // const scene = decodeURIComponent(query.scene)
     }
 }
 </script>

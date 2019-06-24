@@ -1,21 +1,22 @@
 <template>
-<div class='main bg-img'>
+<div class='main-wrap'>
+    <div class="bg bg-img"></div>
     <div class="add-btn" @click="addLost">
         <add-btn></add-btn>
     </div>
     <info-detail v-if="infoShow" :text='currText' @cancel='hiddenInfo'></info-detail>
-    <header class="header">喇叭失物招领</header>
+    <header class="header">失物招领</header>
     <div class="main">
         <div class="item" v-for="(list,index) in data" :key="index">
             <div class="tag">{{list.lostTag}}</div>
-            <image mode='center' src="http://prxyk9xwq.bkt.clouddn.com/tmp/wx2ca9e25aa9b4246a.o6zAJs3d1ga_bSFnpNWjScWB873I.4qOpNAF0kL0w69d42973a55d0d19a9b65e8660e88b4d.png"></image>
+            <image :src="QINIU_BASE_URL+list.lostImage"></image>
             <div class="right">
-                <div class="list-content">{{list.lostDescription}}</div>
+                <div class="list-content">{{list.showLostDescription}}</div>
                 <div class="btn" @click="jump(list)">
                     <s-button value='我是失主' :border='border' size='small' :font='font'></s-button>
                 </div>
                 <div class="time">
-                    {{list.lostDate}}
+                    {{list.trulyLostDate}}
                 </div>
             </div>
         </div>
@@ -29,6 +30,9 @@ import infoDetail from '@/components/info-detail.vue'
 import addBtn from '@/components/add-btn.vue'
 import {jumpTo,showToast} from '@/utils/index'
 import {getPageIndexes,getLostsInfo} from '@/apis/lost'
+import {stampToDate} from '@/utils/time'
+import {QINIU_BASE_URL} from '@/utils/config'
+import { showLoading, hideLoading } from '../../utils';
 export default {
     data() {
         return {
@@ -37,6 +41,7 @@ export default {
             pageIndexes:0,//总分页数
             pageIndex:1,
             dataFree:true,
+            QINIU_BASE_URL,
             border: {
                 width: '1',
                 type: 'solid',
@@ -68,16 +73,20 @@ export default {
         },
         async _getLosts(){
                 try{
+                    showLoading('数据获取中')
                     let res=await getLostsInfo({pageIndex:this.pageIndex++});
                     this.data=res.data;
                     this._initInfoContent()
                 }catch(e){
-
+                    hideLoading()
                 }
+                hideLoading()
         },
         _initInfoContent(){
             this.data.forEach(item=>{
-                item.content=item.content.length>20?item.content.slice(0,20)+'...':item.content;
+                let res=item.lostDescription.length>20?item.lostDescription.slice(0,20)+'...':item.lostDescription;
+                this.$set(item,'showLostDescription',res)
+                item.trulyLostDate=stampToDate(item.lostDate)
             })
         },
         async _getBottomLosts(){
@@ -106,10 +115,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.main {
-    width: 100%;
+.main-wrap {
+    height: auto;
     padding-top: cr(10);
     box-sizing: border-box;
+    .bg{
+        width: 100%;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: -1;
+    }
     .add-btn{
         position: fixed;
         bottom: cr(30);
@@ -132,7 +149,7 @@ export default {
             height: cr(160);
             background-color: rgba(255,255,255,0.64);
             border-radius: cr(6);
-            box-shadow: cr(1) cr(3) cr(30) cr(5) rgba(187,187,187,0.64);
+            box-shadow: cr(1) cr(1) cr(10) cr(3) rgba(187,187,187,0.64);
             padding:0 cr(10);
             @include flex_row;
             font-size: cr(12);
@@ -168,6 +185,9 @@ export default {
                     box-sizing: border-box;
                     height: cr(80);
                     overflow: hidden;
+                }
+                .btn{
+                    margin-left: cr(30);
                 }
                 .btn,.time{
                     margin-top: cr(10);

@@ -1,11 +1,11 @@
 {
   "pages": [ 
     "pages/index/main",
+    "pages/account/main",
+    "pages/manager/main", 
     "pages/lost/main",
     "pages/retrieve/main",
-    "pages/manager/main", 
     "pages/login/main",
-    "pages/account/main",
     "pages/open/main",
     "pages/cutImage/main",
     "pages/release/main",

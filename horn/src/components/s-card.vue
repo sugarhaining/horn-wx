@@ -2,12 +2,11 @@
 <div class='main' @click="jump">
     <div class="left">
         <img :src="info.userImage">
-        <div class="dots"></div>
     </div>
     <div class="right">
         <div class="top">
             <div class="name">{{info.userName}}</div>
-            <div class="time">{{info.quesDate}}</div>
+            <div class="time">{{info.time}}</div>
         </div>
         <div class="bottom">{{info.quesQuestion}}</div>
     </div>
@@ -37,7 +36,7 @@ export default {
     height: cr(70);
     background-color: rgba(255, 255, 255, 0.85);
     border-radius: cr(6);
-    box-shadow: cr(1) cr(3) cr(10) cr(1) rgba(187, 187, 187, 1);
+    box-shadow: cr(1) cr(1) cr(10) cr(1) rgba(187, 187, 187, 1);
     @include flex_row;
     padding: cr(6) cr(6) cr(2);
     box-sizing: border-box;
@@ -52,16 +51,6 @@ export default {
             width: 100%;
             height: 100%;
             border-radius: 50%;
-        }
-
-        .dots {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background-color: red;
-            border-radius: 50%;
-            top: 0;
-            right: -3px;
         }
     }
 

@@ -17,17 +17,23 @@
           </div>
         </div>
         <div class="tags">
-          <label>标签：</label>
-          <picker :range='tags' :value='tagsIndex' @change="updateTag">
-            <div class="picker">{{tags[tagsIndex]}}&or;</div>
+          <label>分类：</label>
+          <picker :range='tags' :value='tagsIndex' @change="updateTag" class="picker-wrap">
+            <div class="picker">
+                <span>{{tags[tagsIndex]}}</span>
+                <img src="/static/icons/downpull.png">
+            </div>
           </picker>
         </div>
         <div class="contact">
           <label>联系方式：</label>
-          <picker :range='ways' :value='waysIndex' @change="updateContact">
-            <div class="picker">{{ways[waysIndex]}}&or;</div>
+          <picker :range='ways' :value='waysIndex' @change="updateContact" class="picker-wrap">
+            <div class="picker">
+                <span>{{ways[waysIndex]}}</span>
+                <img src="/static/icons/downpull.png">
+            </div>
           </picker>
-          <input type="text" placeholder="您的联系方式" class="inpit" v-model="contact_way">
+          <input type="text" placeholder="您的联系号码" class="inpit" v-model="contact_way" v-if="showContactInput">
         </div>
         <div class="btn-nav">
           <div class="btn" @click="open">
@@ -41,12 +47,7 @@
 <script>
 import sTextarea from '@/components/s-textarea.vue'
 import sButton from '@/components/s-button.vue'
-import {
-    showToast,
-    chooseImage,
-    jumpTo
-} from '@/utils/index'
-import { redirectTo} from '../../utils'
+import { redirectTo, showLoading,hideLoading,showToast, navigatorBack} from '../../utils'
 import {postReleaseLosts} from '@/apis/lost'
 import qiNiuUpload from '@/apis/qiniu'
 export default {
@@ -59,8 +60,18 @@ export default {
           tagsIndex:0,
           waysIndex:0,
           currTag:'',
-          detail_value:''
+          detail_value:'',
+          showContactInput:false
         }
+    },
+    watch:{
+       waysIndex(newValue){
+           if(+newValue===0){
+               this.showContactInput=false;
+           }else{
+               this.showContactInput=true;
+           }
+       } 
     },
     methods:{
       updateTag(e){
@@ -78,20 +89,21 @@ export default {
           showToast('请提供失物有效图片')
           return false;
         }
-        console.log('imgurls',this.imgUrls[0])
         try{
-            let res=await qiNiuUpload(this.imgUrls[0])
-            console.log(res)
+            showLoading('发布中')
+            let res=await qiNiuUpload(this.imgUrls[0]);
             let res1= await postReleaseLosts({
                 lostDescription:this.detail_value,
-                lostImage:'',
-                lostTag:this.tags[tagsIndex],
-                lostContact:this.waysIndex===0?'':this.ways[waysIndex],
+                lostImage:res.imageURL,
+                lostTag:this.tags[this.tagsIndex],
+                lostContact:this.waysIndex===0?'':this.ways[this.waysIndex],
                 lostInformation:this.contact_way
             })
+            hideLoading()
             showToast('发布成功')
+            setTimeout(this._jumpLost,500)
         }catch(e){
-                
+            
         }
       },
       detail(value){
@@ -102,6 +114,9 @@ export default {
       },
       remove(index){
         this.imgUrls.splice(index,1)
+      },
+      _jumpLost(){
+          navigatorBack(1)
       }
     },
     components: {
@@ -180,7 +195,6 @@ export default {
       @include flex_row;
       .picker{
         color: #CCCCCC;
-        margin-left: cr(20);
       }
     }
     .contact{
@@ -188,7 +202,6 @@ export default {
       margin-top: cr(20);
       @include flex_row;
       .picker{
-        margin: 0 cr(5);
         color: #CCCCCC;
       }
       input{
@@ -202,6 +215,25 @@ export default {
       @include flex_row;
       justify-content: center;
       margin: cr(30) 0 cr(10);
+    }
+}
+.picker-wrap{
+    border: 1px solid #BBBBBB;
+    border-radius: cr(4);
+    margin-left: cr(2);
+    padding: {
+        left: cr(4);
+        right: cr(4); 
+        top: cr(2);
+        bottom: cr(2); 
+    }
+    .picker{
+        @include flex_row;
+        >img{
+            width: cr(10);
+            height: cr(10);
+            margin-left: cr(2);
+        }
     }
 }
 </style>

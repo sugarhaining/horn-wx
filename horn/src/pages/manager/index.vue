@@ -1,8 +1,9 @@
 <template>
 <div class='main-wrap bg-img'>
     <div class="panel-top">
-        <panel-top :identity='1'></panel-top>
+        <panel-top :identity='identity'></panel-top>
     </div>
+    <div class="empty-error-info" v-if="questionArr.length===0">空空如也~</div>
     <div class="message-show">
         <div class="item" v-for="(item,index) in questionArr" :key='index'>
             <s-card :info='item'></s-card>
@@ -15,7 +16,8 @@
 import panelTop from '@/components/panel-top.vue'
 import sCard from '@/components/s-card.vue'
 import {getAllQuestions,getPageAmounts} from '@/apis/manager'
-import {showToast} from '@/utils/index'
+import {showToast,showLoading,hideLoading} from '@/utils/index'
+import {stampToDate} from '@/utils/time'
 export default {
     data() {
         return {
@@ -29,11 +31,15 @@ export default {
     methods:{
         async _initQuestions(){
             try{
+                showLoading('数据获取中')
                 let res=await getAllQuestions({pageIndex:this.pageIndex++})
                 this.questionArr=res.data
+                this._initTimeInfos()
             }catch(e){
                 showToast('获取信息失败')
+                hideLoading()
             }
+            hideLoading()
         },
         async _initPageAmounts(){
             try{
@@ -43,6 +49,11 @@ export default {
                 
             }
         },
+        _initTimeInfos(){
+            this.questionArr.forEach(item=>{
+                item.time=stampToDate(item.quesDate)
+            })
+        },
         async _reachBottomInitQuestions(){
             if(this.pageIndex<=this.pagaindexes){
                 try{
@@ -50,6 +61,7 @@ export default {
                         pageIndex:this.pageIndex++
                     })
                     this.questionArr=this.questionArr.concat(res.data)
+                    this._initTimeInfos()
                 }catch(e){
 
                 }
@@ -80,6 +92,15 @@ export default {
 <style lang="scss" scoped>
 .main-wrap {
     position: relative;
+    height: auto;
+    min-height: cr(400);
+    .empty-error-info{
+        width: 100%;
+        text-align: center;
+        font-size: cr(12);
+        color: white; 
+        margin-top: cr(20);
+    }
     .panel-top {
         width: 100%;
         background-color: transparent;

@@ -37,6 +37,7 @@ export default {
         stopInterval() {
             this.searchMsg=''
             clearInterval(this.timer)
+            this.timer=null;
         }
     },
     onLoad() {

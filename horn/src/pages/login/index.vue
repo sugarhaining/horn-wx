@@ -5,13 +5,13 @@
         <div class="form-item">
             <img src="/static/icons/user.png">
             <input v-model="user_name" type="text" placeholder="请输入您的账号">
-       </div>
-            <div class="form-item">
+        </div>
+        <div class="form-item">
                 <img src="/static/icons/password.png">
                 <input v-model="user_pass" type="password" placeholder="请输入您的密码">
-       </div>
+        </div>
                 <div class="sub-btn" @click="login">
-                    <s-button value='账号登陆' :font='font' :border='border' size='large'></s-button>
+                    <s-button value='账号登录' :font='font' :border='border' size='large'></s-button>
                 </div>
             </div>
         </div>
@@ -19,8 +19,15 @@
 
 <script>
 import sButton from '@/components/s-button.vue'
-import {getStorageSync,setStorageSync,showToast,jumpTo} from '@/utils/index'
-import {managerLogin} from '@/apis/manager'
+import {
+    getStorageSync,
+    setStorageSync,
+    showToast,
+    jumpTo
+} from '@/utils/index'
+import {
+    managerLogin
+} from '@/apis/manager'
 export default {
     data() {
         return {
@@ -35,55 +42,55 @@ export default {
                 type: 'solid',
                 color: '#FDA164'
             },
-            user_position:0//用户定位   1：超级管理员   2.普通管理员  
+            user_position: 0 //用户定位   1：超级管理员   2.普通管理员  
         }
     },
     components: {
         sButton
     },
-    methods:{
-        async login(){
-            try{
-                let res=await managerLogin({
-                    manaPhone:this.user_name,
-                    manaPass:this.user_pass
+    methods: {
+        async login() {
+            try {
+                let res = await managerLogin({
+                    manaPhone: this.user_name,
+                    manaPass: this.user_pass
                 })
-                if(res.data.errcode===20004){
-                    this.user_position=1;
+                if (res.data.errcode === 20004) {
+                    this.user_position = 1;
                     this._setStorage();
                     this._toManager();
-                }else if(res.data.errcode===20005){
+                } else if (res.data.errcode === 20005) {
                     this._setStorage();
                     this._toManager();
-                }else if(res.data.errcode===20006){
+                } else if (res.data.errcode === 20006) {
                     showToast('密码错误')
-                }else{
+                } else {
                     showToast('账号不存在')
                 }
-            }catch(e){
+            } catch (e) {
                 showToast('未知错误，请稍后重试')
             }
         },
-        _getStorage(){
-            let result=getStorageSync('userAccount');
-            if(result){
-                this.user_name=result.account;
-                this.user_pass=result.password
+        _getStorage() {
+            let result = getStorageSync('userAccount');
+            if (result) {
+                this.user_name = result.account;
+                this.user_pass = result.password
             }
         },
-        _setStorage(){
-            setStorageSync('userAccount',{
-                        account:this.user_name,
-                        password:this.user_pass
-                    })
+        _setStorage() {
+            setStorageSync('userAccount', {
+                account: this.user_name,
+                password: this.user_pass
+            })
         },
-        _toManager(){
-            jumpTo('/pages/manager/main',{
-                    position:this.user_position
-                })
+        _toManager() {
+            jumpTo('/pages/manager/main', {
+                position: this.user_position
+            })
         }
     },
-    onLoad(){
+    onLoad() {
         this._getStorage()
     }
 }
@@ -120,6 +127,7 @@ export default {
                 font-size: cr(12);
                 border-bottom: 2px solid #FDA164;
                 margin-left: cr(18);
+                width: cr(160);
             }
         }
     }

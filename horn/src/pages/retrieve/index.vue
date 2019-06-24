@@ -2,7 +2,7 @@
    <div class='main-wrap bg-img'>
      <div class="float-modal">
          <div class="title">
-             <img :src="info.lostImage">
+             <img :src="QINIU_BASE_URL+info.lostImage">
              {{info.lostDescription}}
          </div>
         <div class="contact">
@@ -19,7 +19,7 @@
                 <s-button value='已取回,删除失物' size='large'></s-button>
             </div>
             <div class="share-btn" @click="showCanvas">
-                <s-button value='点击分享' size='small'></s-button>
+                <s-button value='分享' size='small'></s-button>
             </div>
         </div>
      </div>
@@ -32,13 +32,15 @@ import {preview,setClipboardData,showModal,getStorageSync} from '@/utils/index'
 import sButton from '@/components/s-button.vue'
 import shareCanvas from '@/components/share-canvas'
 import {deleteLosts} from '@/apis/lost'
-import { showToast } from '../../utils';
+import { showToast ,redirectTo,navigatorBack} from '../../utils'
+import {QINIU_BASE_URL} from '../../utils/config'
 export default {
   data () { 
     return {
         info:null,
         sessionid:'',
-        ifCanvasShow:false
+        ifCanvasShow:false,
+        QINIU_BASE_URL
     }
   },
   methods:{
@@ -59,6 +61,7 @@ export default {
                     showToast('一天最多删除两次失物哦')
                 }else{
                     showToast('删除成功','success')
+                    setTimeout(this._jumpLost,500)
                 }
             }
         })
@@ -67,7 +70,10 @@ export default {
           setClipboardData(this.info.lostInformation)
       },
       _getLocalSession(){
-          this.sessionid=getStorageSync('sessionid') || 'free sessionid'
+          this.sessionid=getStorageSync('sessionId') || 'free sessionid'
+      },
+      _jumpLost(){
+          navigatorBack(1)
       }
   },
   components:{
@@ -85,13 +91,14 @@ export default {
     font-size: cr(12);
     padding: cr(10);
     box-sizing: border-box;
-    min-height: cr(400);
+    margin-bottom: cr(40);
     .title{
+        width: 94%;
         padding: cr(10);
         box-sizing: border-box;
         >img{
-          width: cr(80);
-          height: cr(80);
+          width: cr(120);
+          height: cr(120);
           border-radius: cr(4);
           margin: {
               right: cr(15);

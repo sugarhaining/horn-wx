@@ -40,6 +40,16 @@ function deleteLosts(data){
     return ajax(_setUrl('/losts'),data,'DELETE')
 }
 
+/**
+ *获取失物界面二维码
+ *
+ * @param {*} data
+ * @returns
+ */
+function getLostsQRCode(data){
+    return ajax(_setUrl('/losts/codes'),data,'POST')
+}
+
 
 /**
  *生成接口地址辅助方法
@@ -55,5 +65,6 @@ export {
     getLostsInfo,
     getPageIndexes,
     postReleaseLosts,
-    deleteLosts
+    deleteLosts,
+    getLostsQRCode
 }

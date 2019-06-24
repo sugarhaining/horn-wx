@@ -1,6 +1,6 @@
 function stampToDate (timestamp) {
   let _date = new Date (+timestamp);
-  return `${_date.getFullYear ()}-${_date.getMonth () + 1}-${_date.getDay ()}`;
+  return `${_date.getFullYear ()}-${_date.getMonth () + 1}-${_date.getDate ()}`;
 }
 
 function getTimeStamp () {

@@ -2,7 +2,7 @@
 <div class='main-wrap'>
     <span>喇叭应用</span>
     <nav class="tabs">
-        <div class="tab-item" v-for="(item,index) in tabLists" :key="index" @click.stop='jump(item.jump)'>
+        <div class="tab-item" v-for="(item,index) in tabLists" :key="index" @click.stop='jump(item.jump)' v-if='item.show'>
             <div :style="{backgroundPosition:item.active_position}"></div>
             <span>{{item.text}}</span>
         </div>
@@ -18,61 +18,70 @@ import {
 export default {
     data() {
         return {
-            tabLists: [{
-                    text: '小喇叭管理员',
-                    jump: 'login',
-                    left:-293,
-                    top:-200,
-                },
+            tabLists: [
                 {
                     text: '校车查询',
                     jump: 'default',
                     left:-16,
                     top:-410,
+                    show:false
                 },
                 {
                     text: '喇叭广播',
                     jump: 'default',
                     left:-107,
                     top:-305,
+                    show:false
                 },
                 {
                     text: '成绩查询',
                     jump: 'default',
                     left:-107,
                     top:7,
+                    show:false
                 },
                 {
                     text: '电话查询',
                     jump: 'default',
                     left:-12,
                     top:7,
+                    show:false
                 },
                 {
                     text: '学校地图',
                     jump: 'default',
                     left:-293,
                     top:7,
+                    show:false
                 },
                 {
                     text: '失物招领',
                     jump: 'lost',
-                    left:-293,
-                    top:-98,
+                    left:-107,
+                    top:7,
+                    show:true
                 },
                 {
                     text: '一卡通办理',
                     jump: 'default',
                     left:-107,
                     top:-98,
+                    show:false
                 },
                 {
                     text: '最新通知',
                     jump: 'default',
                     left:-293,
                     top:-410,
+                    show:false
                 },
-
+                {
+                    text: '小喇叭管理员',
+                    jump: 'login',
+                    left:-293,
+                    top:-202,
+                    show:true
+                },
             ]
         }
     },
@@ -121,8 +130,7 @@ export default {
             >div {
                 width: cr(75);
                 height: cr(75);
-                background-image: url('http://m.qpic.cn/psb?/V14KNPy63FzKSJ/qcW0Sg4schP5nEjJ0mh71kErWN*HXf5oE4HgJ1PulRo!/b/dLYAAAAAAAAA&bo=zgKsAwAAAAADB0E!&rf=viewer_4');
-                // background-position: cr(-293) cr(-410);
+                background-image: url('https://www.xdxlb.xyz/images/xdxlb20190614191512.jpg');
                 background-size: cr(480) cr(627);
                 background-repeat: no-repeat;
             }

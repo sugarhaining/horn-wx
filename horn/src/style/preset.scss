@@ -2,10 +2,10 @@
 /*
 * iphone5 (320*568)
 */
-$scale:2.34375rpx;
+$scale:2.375rpx;
 @function cr($number) {
     @return ($number * $scale)
-}
+};
 
 .main-wrap {
     width: 100%;
@@ -17,7 +17,7 @@ $scale:2.34375rpx;
 }
 
 .bg-img {
-    background: url('http://m.qpic.cn/psb?/V14KNPy63FzKSJ/tztvGYVi0XJfxaBi6QAs87CGeXHASUbp8Gd.DBfF4no!/b/dLYAAAAAAAAA&bo=7gLWAQAAAAADBxk!&rf=viewer_4') no-repeat 0 0;
+    background: url('https://www.xdxlb.xyz/images/xdxlb20190614185102.jpg') no-repeat 0 0;
     background-size: contain;
     background-attachment: fixed;
 }

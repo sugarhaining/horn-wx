@@ -13,13 +13,13 @@
     <div
       class="upload btn"
       @tap="uploadTap">
-      上传图片
+      选择裁剪图片
     </div>
     <div
       class="getCropperImage btn"
       :style="{ backgroundColor: cropperOpt.boundStyle.color }"
       @tap="getCropperImage">
-      返回继续发布
+      确认裁剪
     </div>
   </div>
   </div>
@@ -28,6 +28,7 @@
 <script>
 import MpvueCropper from 'mpvue-cropper'
 import {redirectTo,showToast} from '@/utils/index'
+import { showLoading,hideLoading } from '../../utils';
 
 let wecropper
 
@@ -71,38 +72,39 @@ export default {
     //   console.log('cropper ready!')
     },
     cropperBeforeImageLoad (...args) {
-      showToast('确定好裁剪区域后直接点击返回继续发布即可')
     },
     cropperLoad (...args) {
-    //   console.log('image loaded')
     },
     uploadTap () {
+        let that=this;
+        showLoading('读取相册中')
       wx.chooseImage({
         count: 1, // 默认9
         sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
         sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
         success: (res) => {
           const src = res.tempFilePaths[0]
-            this.hasChooseImg=true;
-          //  获取裁剪图片资源后，给data添加src属性及其值
-
           wecropper.pushOrigin(src)
+          hideLoading()
+        },
+        fail:(err)=>{
+            console.log(err)
+            hideLoading()
         }
       })
     },
     getCropperImage () {
-        if(!this.hasChooseImg){
-            showToast('请上传有效图片哦')
-            return ;
-        }
+        showLoading('图片处理中')
       wecropper.getCropperImage({ original: true })
         .then((src) => {
+            hideLoading()
             redirectTo('/pages/open/main',{
                 src
             })
         })
         .catch(e => {
           console.error('获取图片失败')
+          hideLoading()
         })
     }
   },

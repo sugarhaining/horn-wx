@@ -3,11 +3,11 @@
     <authorize @cancel='hidden' v-if="!ifAuthorize"></authorize>
     <div class="float-modal">
         <div class="textarea-item">
-            <s-textarea placeholder="请输入你的问题" @change="change" maxlength=40></s-textarea>
+            <s-textarea placeholder="请输入你的问题(上限80字)" @change="change" maxlength=80></s-textarea>
         </div>
         <div class="horn-msg">
             <img src="/static/images/2fdda3cc7cd98d10ae46f020233fb80e7bec9015.png">
-            <div class="msg">喇叭会尽快从通知助手处回复你哦！</div>
+            <div class="msg">喇叭会尽快回复你，回复内容会出现在微信主界面里哦！</div>
         </div>
         <form class="horn-btn" @submit='sendMessage' report-submit='true' >
             <div class="btn-wrap">
@@ -27,7 +27,8 @@ import {
     checkScope,
     getStorageSync,
     showLoading,
-    hideLoading
+    hideLoading,
+    navigatorBack
 } from '@/utils/index'
 import {
     setInterval,
@@ -56,7 +57,7 @@ export default {
                     this.ifAuthorize=false;
                 }
             }catch(e){
-
+                hideLoading()
             }
         },
         change(value) {
@@ -68,6 +69,7 @@ export default {
                 return false;
             }
             try{
+                this._initUser();//再次确认用户数据
                 let res=await postQuestion({
                     quesQuestion:this.textAreaValue,
                     userName:this.userInfo.nickName,
@@ -77,6 +79,7 @@ export default {
                 })
                 if(res.data.errcode===0){
                     showToast('发布成功', 'success')
+                    setTimeout(this._jumpIndex,500)
                 }else if(res.data.errcode===20009){
                     showToast('已有人问过此问题')
                 }else{
@@ -86,12 +89,15 @@ export default {
 
             }
         },
+        _jumpIndex(){
+            navigatorBack(1)
+        },
         _initUser(){
             this.sessionid=getStorageSync('sessionId') || '';
             this.userInfo=getStorageSync('userInfo')
         },
         returnPage() {
-            this.timer = null;
+            this.timer = null;  
         }, 
         hidden(){
             this.ifAuthorize=true;
@@ -99,9 +105,6 @@ export default {
     },
     onLoad(){
         this._checkscope()//用户授权检查
-    },
-    onShow(){
-        this._initUser()
     }
 }
 </script>
@@ -114,7 +117,6 @@ export default {
     @include flex_column;
 
     .float-modal {
-
         .textarea-item {
             width: 86%;
             height: cr(120);

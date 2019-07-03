@@ -2,7 +2,7 @@
 <div class='main-wrap'>
     <span>喇叭应用</span>
     <nav class="tabs">
-        <div class="tab-item" v-for="(item,index) in tabLists" :key="index" @click.stop='jump(item.jump)' v-if='item.show'>
+        <div class="tab-item" v-for="(item,index) in tabLists" :key="index" @click.stop='jump(item)'>
             <div :style="{backgroundPosition:item.active_position}"></div>
             <span>{{item.text}}</span>
         </div>
@@ -20,78 +20,64 @@ export default {
         return {
             tabLists: [
                 {
-                    text: '校车查询',
-                    jump: 'default',
-                    left:-16,
-                    top:-410,
-                    show:false
-                },
-                {
-                    text: '喇叭广播',
-                    jump: 'default',
-                    left:-107,
-                    top:-305,
-                    show:false
-                },
-                {
                     text: '成绩查询',
                     jump: 'default',
-                    left:-107,
-                    top:7,
-                    show:false
+                    left:-16,
+                    top:-414,
+                    path:'http://ehall.xidian.edu.cn/jwapp/sys/cjcx/*default/index.do?amp_sec_version_=1&gid_=bVpObk1BaTYvdDROV2NaODhyYVdGUytzcktHc01VTk1tSXFxSjVUN3pkVXI5TkJ3OGxRTlM4am9FVnNyQ0NDZmo5dG0zZmljdElWdmFZOUtDUmQzeUE9PQ&EMAP_LANG=zh&THEME=cherry#/cjcx'
                 },
                 {
-                    text: '电话查询',
+                    text: '空教室查询',
                     jump: 'default',
                     left:-12,
                     top:7,
-                    show:false
+                    path:'http://ehall.xidian.edu.cn/jwapp/sys/kxjas/*default/index.do?amp_sec_version_=1&gid_=eUJkM0IyMFhxRWVTemFPOUtaSVErcHdOWld3TkJGMkZWMGpCRUQ5dHJZQkRxRGlVT0NjWnhmN24zNEVhTGliblN5Z0FrRFhwRlZFMFU1Vkx4UWs3T0E9PQ&EMAP_LANG=zh&THEME=cherry#/kxjas'
                 },
                 {
-                    text: '学校地图',
+                    text: '后勤报修',
                     jump: 'default',
                     left:-293,
                     top:7,
-                    show:false
+                    path:'http://1000.xidian.edu.cn/index.php/Request/request?amp_sec_version_=1&gid_=WXpCRFUzckxQMkUwbWU5TTBBRzFHdkNBOHpOUk0xU1JLaG1JbTFXcjJRaUcxT0E5a3RIeXFSYkxlV1c0Zmxydm10c002QzNJRXB5RnpVNFFzdzlNQVE9PQ&EMAP_LANG=zh&THEME=cherry'
                 },
                 {
                     text: '失物招领',
                     jump: 'lost',
                     left:-107,
                     top:7,
-                    show:true
                 },
                 {
-                    text: '一卡通办理',
+                    text: '课表查询',
                     jump: 'default',
                     left:-107,
                     top:-98,
-                    show:false
+                    path:'http://ehall.xidian.edu.cn/jwapp/sys/wdkb/*default/index.do?amp_sec_version_=1&gid_=bVpObk1BaTYvdDROV2NaODhyYVdGUytzcktHc01VTk1tSXFxSjVUN3pkVXI5TkJ3OGxRTlM4am9FVnNyQ0NDZmo5dG0zZmljdElWdmFZOUtDUmQzeUE9PQ&EMAP_LANG=zh&THEME=cherry#/xskcb'
                 },
                 {
-                    text: '最新通知',
+                    text: '缴费',
                     jump: 'default',
                     left:-293,
-                    top:-410,
-                    show:false
+                    top:-414,
+                    path:'https://payment.xidian.edu.cn/MNetWorkUI/showPublic'
                 },
                 {
                     text: '小喇叭管理员',
                     jump: 'login',
                     left:-293,
-                    top:-202,
-                    show:true
+                    top:-202
                 },
             ]
         }
     },
     methods: {
-        jump(path) {
-            if (path === 'default') {
-                showToast('功能未开放')
-                return false;
+        jump(item) {
+            if (item.jump === 'default') {
+                jumpTo(`/pages/url/main`,{
+                  path:item.path
+                })
+                return ;
             }
-            jumpTo(`/pages/${path}/main`)
+            jumpTo(`/pages/${item.jump}/main`)
         },
         _bgStyle() {
             this.tabLists.forEach(list=>{

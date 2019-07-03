@@ -10,7 +10,8 @@
     "pages/cutImage/main",
     "pages/release/main",
     "pages/add/main",
-    "pages/reply/main"
+    "pages/reply/main",
+    "pages/url/main"
   ],
   "window": {
     "backgroundTextStyle": "light",

@@ -1,11 +1,12 @@
 {
 	"description": "项目配置文件。",
 	"setting": {
-		"urlCheck": false,
+		"urlCheck": true,
 		"es6": false,
 		"postcss": true,
 		"minified": true,
 		"newFeature": true,
+		"coverView": true,
 		"autoAudits": false,
 		"checkInvalidKey": true,
 		"checkSiteMap": true,
@@ -18,7 +19,7 @@
 	},
 	"miniprogramRoot": "dist/wx/",
 	"compileType": "miniprogram",
-	"appid": "wx2ca9e25aa9b4246a",
+	"appid": "wx4665950b83bead39",
 	"projectname": "horn",
 	"simulatorType": "wechat",
 	"simulatorPluginLibVersion": {},

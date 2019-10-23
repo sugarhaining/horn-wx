@@ -1,7 +1,7 @@
 <template>
 <div class='main-wrap'>
     <div class='info-quetion'>
-        <div>{{info.repoQuestion}}?</div>
+        <div>{{info.show_question}}?</div>
         <img src="/static/icons/share.png" @click="show">    
     </div>
     <div class='info-answer'>
@@ -16,11 +16,12 @@
 
 <script>
 import sButton from './s-button'
+import {stampToDate} from '../utils/time'
 export default {
     props: ['info'],
     data() {
         return {
-
+          
         }
     },
     methods: {
@@ -30,9 +31,6 @@ export default {
     },
     components:{
         sButton
-    },
-    onLoad(){
-
     }
 }
 </script>
@@ -69,6 +67,7 @@ export default {
         >img{
             width: cr(12);
             height: cr(12);
+            min-width: cr(12);
         }
     }
 
@@ -87,6 +86,7 @@ export default {
         >span:nth-of-type(2){
             padding-top: cr(5);
             width: 80%;
+            word-break: break-all;
         }
     }
     .footer-nav{

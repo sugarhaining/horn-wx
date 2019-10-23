@@ -26,7 +26,7 @@ function getRepositoriesIndexes(data){
  * @returns
  */
 function getBrandAnswer(data){
-    return ajax(_setUrl('/users/repositories'),data)
+    return ajax(_setUrl('/users/storehouses'),data)
 }
 
 
@@ -48,7 +48,7 @@ function getIndexQRCode(data){
  * @returns
  */
 function getSearchAnswer(data){
-    return ajax(_setUrl('/users/repositories/search'),data)
+    return ajax(_setUrl('/users/storehouses/search'),data)
 }
 
 /**

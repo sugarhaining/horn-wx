@@ -62,9 +62,9 @@ methods:{
     },
     updateData(id){
         this.$emit('update',{
-            manaPhone:this.account_value,
-            manaRemark:this.remark_value,
-            manaId:id
+            phone:this.account_value,
+            remark:this.remark_value,
+            id
         })
     },
     format_account(){
@@ -116,15 +116,15 @@ methods:{
         }
         try{
             let res=await registe({
-                manaPhone:this.account_value,
-                manaPass:this.password_value,
-                manaRemark:this.remark_value
+                phone:this.account_value,
+                password:this.password_value,
+                remark:this.remark_value
             })
-            if(res.data.errcode===0){
+            if(res.data.code===0){
                 showToast('成功','success');
                 this.hidden()
                 this.updateData(res.data.manaId)
-            }else if(res.data.errcode===20003){
+            }else if(res.data.code===20003){
                 showToast('账号已存在')
             }
         }catch(e){

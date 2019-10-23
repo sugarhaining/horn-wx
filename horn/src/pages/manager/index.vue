@@ -1,14 +1,15 @@
 <template>
-<div class='main-wrap bg-img'>
-    <div class="panel-top">
-        <panel-top :identity='identity'></panel-top>
-    </div>
-    <div class="empty-error-info" v-if="questionArr.length===0">空空如也~</div>
-    <div class="message-show">
-        <div class="item" v-for="(item,index) in questionArr" :key='index'>
-            <s-card :info='item'></s-card>
-        </div>
-    </div>
+<div class='main-wrap'>
+  <div class="for-bg-img bg-img"></div>
+  <div class="panel-top">
+      <panel-top :identity='identity'></panel-top>
+  </div>
+  <div class="empty-error-info" v-if="questionArr.length === 0">空空如也&nbsp;>_></div>
+  <div class="message-show">
+      <div class="item" v-for="(item,index) in questionArr" :key='index'>
+          <s-card :info='item'></s-card>
+      </div>
+  </div>  
 </div>
 </template>
 
@@ -22,7 +23,7 @@ export default {
     data() {
         return {
             identity: 0,
-            pageIndex:1,
+            pageIndex:0,
             questionArr: [],
             pagaindexes:0,//总的分页数
             dataFree:true
@@ -32,36 +33,32 @@ export default {
         async _initQuestions(){
             try{
                 showLoading('数据获取中')
-                let res=await getAllQuestions({pageIndex:this.pageIndex++})
-                this.questionArr=res.data
-                this._initTimeInfos()
+                let res=await getAllQuestions({pageNumber:this.pageIndex++})
+                this.questionArr=res.data.data.questions
+                this.pagaindexes=res.data.data.totalPage
+                this._initTimeInfos();
             }catch(e){
                 showToast('获取信息失败')
                 hideLoading()
             }
             hideLoading()
         },
-        async _initPageAmounts(){
-            try{
-                let res=await getPageAmounts({amount:7})
-                this.pagaindexes=res.data.indexNumber
-            }catch(e){
-                
-            }
-        },
         _initTimeInfos(){
             this.questionArr.forEach(item=>{
-                item.time=stampToDate(item.quesDate)
+                this.$set(item, 'time', '');
+                this.$set(item, 'show_question', '');
+                item.time = stampToDate(item.createTime * 1000);
+                item.show_question = item.question;
+                item.question.length > 20 && (item.show_question = item.question.slice(0,20) + '...');
             })
         },
         async _reachBottomInitQuestions(){
-            if(this.pageIndex<=this.pagaindexes){
+            if(this.pageIndex <= this.pagaindexes){
                 try{
                     let res=await getAllQuestions({
-                        pageIndex:this.pageIndex++
+                        pageNumber:this.pageIndex++
                     })
-                    this.questionArr=this.questionArr.concat(res.data)
-                    this._initTimeInfos()
+                    this.questionArr=this.questionArr.concat(res.data.data.questions)
                 }catch(e){
 
                 }
@@ -69,6 +66,7 @@ export default {
                 showToast('没有更多数据了')
                 this.dataFree=false;
             }
+            this._initTimeInfos()
         }
     },
     components: {
@@ -81,15 +79,22 @@ export default {
     },
     async onShow(){
         this.identity=this.$mp.query.position;
-        this.pageIndex=1;
+        this.pageIndex=0;
         this.dataFree=true;
-        await this._initPageAmounts();
         await this._initQuestions();
     }
 }
 </script>
 
 <style lang="scss" scoped>
+.for-bg-img{
+  position: fixed;
+  width: 100%;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: -1;
+}
 .main-wrap {
     position: relative;
     height: auto;

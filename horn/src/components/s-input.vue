@@ -59,6 +59,8 @@ export default {
         width: 94%;
         height: cr(35);
         @include flex_row;
+        background-color: white;
+        border-radius: cr(5); 
 
         .input {
             width: 75%;

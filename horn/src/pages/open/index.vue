@@ -2,7 +2,7 @@
 <div class='main-wrap bg-img'>
     <div class="float-modal">
         <div class="text-area">
-            <s-textarea placeholder='请提供失物的详细信息...' @change="detail"></s-textarea>
+            <s-textarea placeholder='请提供失物的详细信息...' @change="detail" saveContent="true"></s-textarea>
         </div>
         <div class="choose-img">
           <div class="images" v-if="imgUrls.length!==0">
@@ -47,9 +47,20 @@
 <script>
 import sTextarea from '@/components/s-textarea.vue'
 import sButton from '@/components/s-button.vue'
-import { redirectTo, showLoading,hideLoading,showToast, navigatorBack} from '../../utils'
+import { 
+    redirectTo,
+    showLoading,
+    hideLoading,
+    showToast,
+    navigatorBack,
+    getStorageSync,
+    setStorageSync,
+    login,
+    jumpTo
+} from '../../utils'
 import {postReleaseLosts} from '@/apis/lost'
 import qiNiuUpload from '@/apis/qiniu'
+import { postLogin } from '@/apis/users';
 export default {
     data() {
         return {
@@ -66,7 +77,7 @@ export default {
     },
     watch:{
        waysIndex(newValue){
-           if(+newValue===0){
+           if( +newValue === 0){
                this.showContactInput=false;
            }else{
                this.showContactInput=true;
@@ -74,6 +85,17 @@ export default {
        } 
     },
     methods:{
+        async _userLoginLine(userInfo) {
+            const wxLoginRes = await login();
+            const clientLoginRes = await postLogin({
+                code: wxLoginRes.code,
+                ...userInfo
+            })
+
+            if (userLoginRes.data.data) {
+                setStorageSync('userId', userLoginRes.data.data);
+            }
+        },
       updateTag(e){
         this.tagsIndex=e.mp.detail.value
       },
@@ -89,15 +111,19 @@ export default {
           showToast('请提供失物有效图片')
           return false;
         }
+        if (this.waysIndex !==0 && !(this.contact_way)) {
+          showToast('请输入联系方式或选择不填');
+          return false;
+        }
         try{
             showLoading('发布中')
             let res=await qiNiuUpload(this.imgUrls[0]);
             let res1= await postReleaseLosts({
-                lostDescription:this.detail_value,
-                lostImage:res.imageURL,
-                lostTag:this.tags[this.tagsIndex],
-                lostContact:this.waysIndex===0?'':this.ways[this.waysIndex],
-                lostInformation:this.contact_way
+                description:this.detail_value,
+                image:res.imageURL,
+                tag:this.tags[this.tagsIndex],
+                contact:this.waysIndex===0?'':this.ways[this.waysIndex],
+                information:this.contact_way
             })
             hideLoading()
             showToast('发布成功')
@@ -122,6 +148,17 @@ export default {
     components: {
         sButton,
         sTextarea,
+    },
+    onLoad() {
+        const userInfo = getStorageSync('userInfo');
+        const userId = getStorageSync('userId');
+        userId && (userInfo.userId = userId);
+        if (!userInfo) {
+            jumpTo('../authorize/main');
+            return false;
+        }
+
+        this._userLoginLine(userInfo);
     },
     onShow(){
         if(this.$mp.query.src){

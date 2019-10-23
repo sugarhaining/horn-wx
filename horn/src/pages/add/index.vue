@@ -51,15 +51,17 @@ methods:{
     }
     try{
         let res=await addQuestions({
-            repoQuestion:this.question_value,
-            repoAnswer:this.answer_value
+            question:this.question_value,
+            answer:this.answer_value
         })
-        if(res.data.errcode===0){
+        if(res.data.code === 0){
             showToast('添加成功','success')
             this.question_value='';
             this.answer_value=''
-        }else{
-            showToast('添加失败')
+        } else if (res.data.code === 87014) {
+            showToast('请修正敏感词后重新添加');
+        } else {
+            showToast('添加失败');
         }
     }catch(e){
 

@@ -1,20 +1,21 @@
 <template>
 <div class='main' @click="jump">
     <div class="left">
-        <img :src="info.userImage">
+        <img :src="info.image">
     </div>
     <div class="right">
         <div class="top">
-            <div class="name">{{info.userName}}</div>
+            <div class="name">{{info.name}}</div>
             <div class="time">{{info.time}}</div>
         </div>
-        <div class="bottom">{{info.quesQuestion}}</div>
+        <div class="bottom">{{info.show_question}}</div>
     </div>
 </div>
 </template>
 
 <script>
 import {jumpTo} from '@/utils/index'
+import {stampToDate} from '@/utils/time'
 export default {
     props: ['info'],
     data() {
@@ -25,7 +26,7 @@ export default {
     methods:{
         jump(){
             jumpTo('/pages/reply/main',this.info)
-        }
+        } 
     }
 }
 </script>
@@ -95,6 +96,7 @@ export default {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            margin-bottom: cr(4);
         }
     }
 }

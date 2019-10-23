@@ -1,6 +1,5 @@
 <template>
 <div class="main-wrap bg-img">
-    <authorize @cancel='hidden' v-if="!ifAuthorize"></authorize>
     <div class="float-modal">
         <div class="textarea-item">
             <s-textarea placeholder="请输入你的问题(上限80字)" @change="change" maxlength=80></s-textarea>
@@ -21,43 +20,43 @@
 <script>
 import sTextarea from '../../components/s-textarea.vue'
 import sButton from '@/components/s-button.vue'
-import authorize from '../../components/authorize'
 import {
     showToast,
     checkScope,
     getStorageSync,
     showLoading,
     hideLoading,
-    navigatorBack
-} from '@/utils/index'
+    navigatorBack,
+    jumpTo,
+    login,
+    setStorageSync
+} from '@/utils';
 import {
     setInterval,
     setTimeout
 } from 'timers';
-import {postQuestion} from '@/apis/users'
-import { jumpTo } from '../../utils';
+import {postQuestion, postLogin} from '@/apis/users'
 export default {
     components: {
-        sTextarea,sButton,authorize
+        sTextarea,sButton
     },
     data() {
         return {
             textAreaValue: '',
             timer: null,
-            ifAuthorize:true
+            ifAuthorize:true,
+            path: '',
         }
     },
     methods: {
-        async _checkscope(){
-            showLoading('检查授权中')
-            try{
-                let res=await checkScope();
-                hideLoading()
-                if(!res.authSetting['scope.userInfo']){
-                    this.ifAuthorize=false;
-                }
-            }catch(e){
-                hideLoading()
+        async _userLoginLine(userInfo) {
+            const wxLoginRes = await login();
+            const clientLoginRes = await postLogin({
+                code: wxLoginRes.code,
+                ...userInfo
+            })
+            if (clientLoginRes.data.data) {
+                setStorageSync('userId', clientLoginRes.data.data);
             }
         },
         change(value) {
@@ -71,40 +70,42 @@ export default {
             try{
                 this._initUser();//再次确认用户数据
                 let res=await postQuestion({
-                    quesQuestion:this.textAreaValue,
-                    userName:this.userInfo.nickName,
-                    userImage:this.userInfo.avatarUrl,
-                    sessionId:this.sessionid,
+                    question:this.textAreaValue,
+                    userId:this.userId,
                     formId:e.target.formId
                 })
-                if(res.data.errcode===0){
+                if(res.data.code === 0){
                     showToast('发布成功', 'success')
                     setTimeout(this._jumpIndex,500)
-                }else if(res.data.errcode===20009){
-                    showToast('已有人问过此问题')
-                }else{
-                    showToast('发布失败')
+                } else if (res.data.code === 87014) {
+                    showToast('请修正敏感词后重新留言');
+                } else {
+                  showToast('发布失败')
                 }
-            }catch(e){
-
-            }
+            }catch(e){}
         },
         _jumpIndex(){
             navigatorBack(1)
         },
         _initUser(){
-            this.sessionid=getStorageSync('sessionId') || '';
-            this.userInfo=getStorageSync('userInfo')
+            this.userInfo=getStorageSync('userInfo');
+            this.userId = getStorageSync('userId');
         },
         returnPage() {
             this.timer = null;  
-        }, 
-        hidden(){
-            this.ifAuthorize=true;
         }
     },
-    onLoad(){
-        this._checkscope()//用户授权检查
+    onLoad() {
+        const userInfo = getStorageSync('userInfo');
+        const userId = getStorageSync('userId');
+        userId && (userInfo.userId = userId);
+
+        if (!userInfo) {
+            jumpTo('../authorize/main');
+            return false;
+        }
+
+        this._userLoginLine(userInfo);
     }
 }
 </script>

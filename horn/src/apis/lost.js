@@ -8,7 +8,7 @@ import ajax from '@/utils/ajax'
  * @returns
  */
 function getLostsInfo(data){
-    return ajax(_setUrl('/losts'),data)
+    return ajax(_setUrl('/lost'),data)
 }
 
 /**
@@ -27,7 +27,7 @@ function getPageIndexes(data){
  * @returns
  */
 function postReleaseLosts(data){
-    return ajax(_setUrl('/losts'),data,'POST')
+    return ajax(_setUrl('/lost'),data,'POST')
 }
 
 /**
@@ -37,7 +37,7 @@ function postReleaseLosts(data){
  * @returns
  */
 function deleteLosts(data){
-    return ajax(_setUrl('/losts'),data,'DELETE')
+    return ajax(_setUrl('/lost'),data,'DELETE')
 }
 
 /**
@@ -47,7 +47,7 @@ function deleteLosts(data){
  * @returns
  */
 function getLostsQRCode(data){
-    return ajax(_setUrl('/losts/codes'),data,'POST')
+    return ajax(_setUrl('/lost/codes'),data,'POST')
 }
 
 

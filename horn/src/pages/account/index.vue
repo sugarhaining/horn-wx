@@ -6,8 +6,8 @@
             <span class="title">目前的管理员:</span>
             <div class="lists">
                 <div class="list-item" v-for="(list,index) in accounts" :key="index">
-                    <div class="account">{{list.manaPhone}}</div>
-                    <div class="user">{{list.manaRemark}}</div>
+                    <div class="account">{{list.phone}}</div>
+                    <div class="user">{{list.remark}}</div>
                     <img src="/static/icons/delete.png" @click="remove(list,index)">
                 </div>
                 </div>
@@ -48,7 +48,7 @@ export default {
         },
         async remove(list,index) {
             try{
-                let res=await deleteManage({manaId:list.manaId})
+                let res=await deleteManage({id:list.id})
                 this.accounts.splice(index,1)
                 showToast('删除成功','success')
             }catch(e){
@@ -60,7 +60,7 @@ export default {
         },
         async _initData(){
             let res=await getManagersInfo();
-            this.accounts=res.data
+            this.accounts=res.data.data
         }
     },
     onLoad(){

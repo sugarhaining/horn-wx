@@ -18,63 +18,64 @@ import {
 export default {
     data() {
         return {
-            tabLists: [
-                {
+            tabLists: [{
                     text: '成绩查询',
                     jump: 'default',
-                    left:-16,
-                    top:-414,
-                    path:'http://ehall.xidian.edu.cn/jwapp/sys/cjcx/*default/index.do?amp_sec_version_=1&gid_=bVpObk1BaTYvdDROV2NaODhyYVdGUytzcktHc01VTk1tSXFxSjVUN3pkVXI5TkJ3OGxRTlM4am9FVnNyQ0NDZmo5dG0zZmljdElWdmFZOUtDUmQzeUE9PQ&EMAP_LANG=zh&THEME=cherry#/cjcx'
-                },
-                {
+                    left:-15,
+                    top:-338,
+                    path:'https://www.xdxlb.com/xiaoyuan/jwapp/sys/cjcx/*default/index.do?amp_sec_version_=1&gid_=ZjJFZVNULzJqamdKSlgyYVcvZ2RXS09kaEVXRkxZVFBXUUphMmtaRnd0aWdIdDJWRFBYTDJrU2c1TlB4Y2JRb0tiSmQ5YnZOWVUzRzNsdEgzd2o3VEE9PQ&EMAP_LANG=zh&THEME=cherry#/cjcx'
+                }, {
                     text: '空教室查询',
                     jump: 'default',
-                    left:-12,
-                    top:7,
-                    path:'http://ehall.xidian.edu.cn/jwapp/sys/kxjas/*default/index.do?amp_sec_version_=1&gid_=eUJkM0IyMFhxRWVTemFPOUtaSVErcHdOWld3TkJGMkZWMGpCRUQ5dHJZQkRxRGlVT0NjWnhmN24zNEVhTGliblN5Z0FrRFhwRlZFMFU1Vkx4UWs3T0E9PQ&EMAP_LANG=zh&THEME=cherry#/kxjas'
-                },
-                {
+                    left:-107,
+                    top:-120,
+                    path:'https://www.xdxlb.com/xiaoyuan/jwapp/sys/kxjas/*default/index.do?amp_sec_version_=1&gid_=ZjJFZVNULzJqamdKSlgyYVcvZ2RXS09kaEVXRkxZVFBXUUphMmtaRnd0aWdIdDJWRFBYTDJrU2c1TlB4Y2JRb0tiSmQ5YnZOWVUzRzNsdEgzd2o3VEE9PQ&EMAP_LANG=zh&THEME=cherry#/kxjas'
+                }, {
                     text: '后勤报修',
                     jump: 'default',
                     left:-293,
-                    top:7,
-                    path:'http://1000.xidian.edu.cn/index.php/Request/request?amp_sec_version_=1&gid_=WXpCRFUzckxQMkUwbWU5TTBBRzFHdkNBOHpOUk0xU1JLaG1JbTFXcjJRaUcxT0E5a3RIeXFSYkxlV1c0Zmxydm10c002QzNJRXB5RnpVNFFzdzlNQVE9PQ&EMAP_LANG=zh&THEME=cherry'
-                },
-                {
+                    top:-120,
+                    path:'https://www.xdxlb.com/houqin/index.php/Request/request?amp_sec_version_=1&gid_=elplVFdBRFRmdHB1c2hacTJMdHJibG01SHVvb2pidjBHMVBlKzZqRTVNUjlhbkhzSDgwQkVEdDNURVVOOGhYMXQ5ajBKN01ob2xnbUpQVnAvaTVCemc9PQ&EMAP_LANG=zh&THEME=cherry'
+                }, {
                     text: '失物招领',
                     jump: 'lost',
                     left:-107,
-                    top:7,
+                    top:-10,
                 },
                 {
                     text: '课表查询',
                     jump: 'default',
-                    left:-107,
-                    top:-98,
-                    path:'http://ehall.xidian.edu.cn/jwapp/sys/wdkb/*default/index.do?amp_sec_version_=1&gid_=bVpObk1BaTYvdDROV2NaODhyYVdGUytzcktHc01VTk1tSXFxSjVUN3pkVXI5TkJ3OGxRTlM4am9FVnNyQ0NDZmo5dG0zZmljdElWdmFZOUtDUmQzeUE9PQ&EMAP_LANG=zh&THEME=cherry#/xskcb'
+                    left:-390,
+                    top:-230,
+                    path:'https://www.xdxlb.com/xiaoyuan/jwapp/sys/wdkb/*default/index.do?amp_sec_version_=1&gid_=ZjJFZVNULzJqamdKSlgyYVcvZ2RXS09kaEVXRkxZVFBXUUphMmtaRnd0aWdIdDJWRFBYTDJrU2c1TlB4Y2JRb0tiSmQ5YnZOWVUzRzNsdEgzd2o3VEE9PQ&EMAP_LANG=zh&THEME=cherry#/xskcb'
                 },
                 {
                     text: '缴费',
                     jump: 'default',
-                    left:-293,
-                    top:-414,
-                    path:'https://payment.xidian.edu.cn/MNetWorkUI/showPublic'
-                },
-                {
+                    left:-15,
+                    top:-10,
+                    path:'https://payment.xidian.edu.cn/NetWorkUI/slogin.html'
+                }, {
                     text: '小喇叭管理员',
                     jump: 'login',
-                    left:-293,
-                    top:-202
-                },
-            ]
+                    left:-107,
+                    top:-446,
+                }, {
+                    text: '图书馆相关',
+                    jump: 'default',
+                    left:-15,
+                    top:-447,
+                    path:'http://202.117.124.133/?amp_sec_version_=1&gid_=RitQVFp5NkhGNEhtSERLRnA3bXF6UVpBSC9rS29yMEc1dnk4aEFNWXBsMEhaRmNkRE5kMjVCZ0kwVldGazRxOUE5aFJFOTVEV3E4YVpNa2VsbzJZbWc9PQ&EMAP_LANG=zh&THEME=cherry'
+                },]
         }
     },
     methods: {
         jump(item) {
             if (item.jump === 'default') {
-                jumpTo(`/pages/url/main`,{
-                  path:item.path
-                })
+                /* jumpTo(`/pages/url/main`,{
+                  path: item.path
+                }) */
+                showToast('该服务将尽快开通');
                 return ;
             }
             jumpTo(`/pages/${item.jump}/main`)
@@ -116,8 +117,8 @@ export default {
             >div {
                 width: cr(75);
                 height: cr(75);
-                background-image: url('https://www.xdxlb.xyz/images/xdxlb20190614191512.jpg');
-                background-size: cr(480) cr(627);
+                background-image: url('http://m.qpic.cn/psb?/V14KNPy63FzKSJ/EgjG1qwmxAYBHu.cF4vTFlTUhb7B3zUF07JzpRJmaCU!/b/dDUBAAAAAAAA&bo=zgIlAwAAAAADB8g!&rf=viewer_4');
+                background-size: cr(480) cr(555);
                 background-repeat: no-repeat;
             }
         }

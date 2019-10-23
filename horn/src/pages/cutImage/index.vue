@@ -95,17 +95,17 @@ export default {
     },
     getCropperImage () {
         showLoading('图片处理中')
-      wecropper.getCropperImage({ original: true })
+        wecropper.getCropperImage({ original: true })
         .then((src) => {
-            hideLoading()
             redirectTo('/pages/open/main',{
                 src
             })
         })
         .catch(e => {
           console.error('获取图片失败')
-          hideLoading()
         })
+
+        hideLoading()
     }
   },
   onShow(){

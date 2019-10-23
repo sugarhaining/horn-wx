@@ -1,9 +1,9 @@
 <template>
 <div class='main-wrap bg-img'>
     <div class="float-modal">
-        <img :src="info.userImage">
-        <div class="name">{{info.userName}}</div>
-        <div class="content">{{info.quesQuestion}}</div>
+        <img :src="info.image">
+        <div class="name">{{info.name}}</div>
+        <div class="content">{{info.question}}</div>
         <div class="text-area">
             <s-textarea placeholder='输入回答...' @change="answer"></s-textarea>
         </div>
@@ -54,16 +54,18 @@ export default {
             if (this.answer_value === '') {
                 showToast('回答不能为空');
                 return false;
-            }
+            } 
             try{
                 let res=await answerQuestions({
                     isAdd:this.ifAdd?1:0,
-                    quesId:this.info.quesId,
-                    quesAnswer:this.answer_value
+                    id:this.info.id,
+                    answer:this.answer_value
                 })
-                if(res.data.errcode!==0){
+                if(res.data.code!==0){
                     showToast('问题已失效');
-                }else{
+                } else if (res.data.code === 87014) {
+                    showToast('请修正敏感词后重新回复');
+                } else{
                     showToast('回答成功','success')
                     setTimeout(this._jumpManager,500)
                 }

@@ -7,55 +7,20 @@
 <script>
 import tabSwiper from '../../components/tab-swiper.vue'
 import {login,showLoading,hideLoading} from '@/utils/index'
-import {checkLoginTimeout,postLogin} from '@/apis/users'
-import { showToast, getStorageSync,setStorageSync } from '../../utils';
+import {postLogin} from '@/apis/users'
+import { showToast, getStorageSync,setStorageSync, checkScope} from '../../utils';
 
 export default {
     data() {
         return {
             ifAuthorize:true,
             pageNumber:1,
-             autoSearch:false,
-            searchId:0
+            searchId:0,
+            isNoAutho: false,
         }
     },
     components: {
         tabSwiper
-    },
-    methods:{
-        async _checkLogin(){
-            try{
-                let res=await checkLoginTimeout({
-                    sessionId:this.sessionId
-                })
-                if(res.data.errcode===20001){
-                    this._login()
-                }
-            }catch(e){
-                
-            }
-        },
-        async _login(){
-            showLoading('登陆中')
-            login().then(res=>{
-                return postLogin({
-                    code:res.code
-                })
-            }).then(res=>{
-                setStorageSync('sessionId',res.data.sessionId)
-                hideLoading()
-            }).catch(err=>{
-                hideLoading()
-            })
-        },
-        _initSessionId(){
-            this.sessionId=getStorageSync('sessionId') || 'test sessionId'
-        }
-    },
-    onLoad(options){
-        this._initSessionId()
-        this._checkLogin()
-        // const scene = decodeURIComponent(query.scene)
     }
 }
 </script>

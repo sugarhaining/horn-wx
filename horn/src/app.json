@@ -1,7 +1,9 @@
 {
-  "pages": [ 
+  "pages": [
     "pages/index/main",
+    "pages/authorize/main",
     "pages/account/main",
+    "pages/add/main",
     "pages/manager/main", 
     "pages/lost/main",
     "pages/retrieve/main",
@@ -9,9 +11,7 @@
     "pages/open/main",
     "pages/cutImage/main",
     "pages/release/main",
-    "pages/add/main",
-    "pages/reply/main",
-    "pages/url/main"
+    "pages/reply/main"
   ],
   "window": {
     "backgroundTextStyle": "light",

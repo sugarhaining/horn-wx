@@ -1,9 +1,9 @@
 <template>
    <div class='main'>
        <span>用户留言</span>
-       <div class="nav" v-if="identity==1">
-           <img src="/static/icons/manager.png" @click="jump">
-           <img src="/static/icons/add.png" @click="add">
+       <div class="nav">
+           <img src="/static/icons/manager.png" @click="jump" v-if="identity == 1">
+           <img src="/static/icons/add.png" @click="add" v-if="identity !== 0">
        </div>
    </div>
 </template>

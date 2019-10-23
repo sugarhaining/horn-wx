@@ -8,16 +8,15 @@ const ajax = function(url,data={},method='GET',headers = {'Content-Type': 'appli
             method,
             data,
             header:headers,
-            success(res){
-                if(res.data.errcode ==-1){
+            success(res) {
+                if (res.data.code == -1) {
                     reject(res)
-                }
-                else{
+                } else {
                     resolve(res)
                 }
             },
-            fail(err){
-                reject(err)
+            fail(err) {
+                reject(err);
             }
         })
     })

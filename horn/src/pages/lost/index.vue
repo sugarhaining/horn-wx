@@ -8,8 +8,8 @@
     <header class="header">失物招领</header>
     <div class="main">
         <div class="item" v-for="(list,index) in data" :key="index">
-            <div class="tag">{{list.lostTag}}</div>
-            <image :src="QINIU_BASE_URL+list.lostImage"></image>
+            <div class="tag">{{list.tag}}</div>
+            <image :src="QINIU_BASE_URL+list.image"></image>
             <div class="right">
                 <div class="list-content">{{list.showLostDescription}}</div>
                 <div class="btn" @click="jump(list)">
@@ -39,7 +39,7 @@ export default {
             infoShow:false,
             data: [],
             pageIndexes:0,//总分页数
-            pageIndex:1,
+            pageIndex:0,
             dataFree:true,
             QINIU_BASE_URL,
             border: {
@@ -63,19 +63,12 @@ export default {
         addLost(){
             jumpTo('/pages/open/main')
         },
-        async _getPageIndexes(){
-            try{
-                let res=await getPageIndexes({amount:7})
-                this.pageIndexes=res.data.indexNumber
-            }catch(e){
-
-            }
-        },
         async _getLosts(){
                 try{
                     showLoading('数据获取中')
-                    let res=await getLostsInfo({pageIndex:this.pageIndex++});
-                    this.data=res.data;
+                    let res=await getLostsInfo({pageNumber:this.pageIndex++});
+                    this.data=res.data.data.lost;
+                    this.pageIndexes = res.data.data.totalPage;
                     this._initInfoContent()
                 }catch(e){
                     hideLoading()
@@ -84,21 +77,21 @@ export default {
         },
         _initInfoContent(){
             this.data.forEach(item=>{
-                let res=item.lostDescription.length>20?item.lostDescription.slice(0,20)+'...':item.lostDescription;
+                let res=item.description.length>20?item.description.slice(0,20)+'...':item.description;
                 this.$set(item,'showLostDescription',res)
-                item.trulyLostDate=stampToDate(item.lostDate)
+                item.trulyLostDate=stampToDate(item.createTime * 1000)
             })
         },
         async _getBottomLosts(){
             if(this.pageIndex<=this.pageIndexes){
-                let res=await getLostsInfo({pageIndex:this.pageIndex++});
-                this.data=this.data.concat(res.data)
+                let res=await getLostsInfo({pageNumber:this.pageIndex++});
+                this.data=this.data.concat(res.data.data.lost)
                 this._initInfoContent()
             }else{
                 showToast('没有更多数据了')
                 this.dataFree=false;
             }
-        }
+        },
     },
     onReachBottom(){
         if(this.dataFree){
@@ -106,9 +99,8 @@ export default {
         }
     },
     async onShow(){
-        this.pageIndex=1;
+        this.pageIndex=0;
         this.dataFree=true;
-        await this._getPageIndexes();
         await this._getLosts()
     }
 }

@@ -1,10 +1,10 @@
 <template>
-<textarea v-model="content" class="textarea" :placeholder="placeholder" @input="input" :maxlength='maxlength'></textarea>
+  <textarea v-model="content" class="textarea" :placeholder="placeholder" @input="input" :maxlength='maxlength'></textarea>
 </template>
 
 <script>
 export default {
-    props: ['placeholder','maxlength','value'],
+    props: ['placeholder', 'maxlength', 'value', 'saveContent'],
     data() {
         return {
             content:'',
@@ -12,26 +12,30 @@ export default {
         }
     },
     methods:{
-        _input(){
-            this.$emit('change',this.content)
+        _input() {
+            this.$emit('change', this.content)
         },
-        input(){
-            let res=this._debounce(this._input);
+        input() {
+            let res = this._debounce(this._input);
             res();
         },
-        _debounce(fn){
-            let context=this;
+        _debounce(fn) {
+            let context = this;
             return function(){
                 let args=arguments;
-                if(context.timer){
+                if (context.timer) {
                     clearTimeout(context.timer);
-                    context.timer=null
+                    context.timer = null;
                 }
-                context.timer=setTimeout(function(){
-                    fn.apply(context,args)
-                },500)
+                context.timer = setTimeout(function(){
+                    fn.apply(context,args);
+                }, 500);
             }
         } 
+    },
+    onShow() {
+      !this.saveContent && (this.content = '');
+      this._input();
     }
 }
 </script>
@@ -44,7 +48,7 @@ export default {
     font-size: cr(12);
     padding: cr(6) cr(6);
     border-radius: cr(4);
-    color: rgba(136,136,136,1);
+    color: rgba(136, 136, 136, 1);
     box-sizing: border-box;
 }
 </style>

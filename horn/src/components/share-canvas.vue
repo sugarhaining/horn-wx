@@ -9,16 +9,16 @@
 
 <script>
 const answerMaxLength=14;
-const questionMaxLength=15;
+const questionMaxLength=18;
 const ctx = wx.createCanvasContext('shareCanvas')
 const canvasWidth=250;
 const canvasHeight=379; 
 const questionBgImage=BASEURL+'/images/mmexport1559632826175.jpg';
 const lostsBgImage=BASEURL+'/images/mmexport1559632821565.jpg';
-import {canvasToTempFilePath,saveImageToPhotosAlbum,showLoading,hideLoading,getImageInfo} from '@/utils/index'
+import {canvasToTempFilePath,saveImageToPhotosAlbum,showLoading,hideLoading,getImageInfo, stampToDate} from '@/utils/index'
 import {BASEURL,QINIU_BASE_URL} from '@/utils/config'
 import {getIndexQRCode} from '@/apis/users'
-import { getLostsQRCode} from '@/apis/lost'
+import {getLostsQRCode} from '@/apis/lost'
 export default {
     props:{
         info:{
@@ -48,13 +48,13 @@ export default {
     methods: {
         async _drawRetrieve(){//失物招领绘制
             showLoading('生成图片中')
-            let res1=await getLostsQRCode({lostId:1})
-            console.log(res1.data.imageUrl)
+            let res1=await getLostsQRCode()
             let res=await Promise.all([
                 getImageInfo(lostsBgImage),
-                getImageInfo(QINIU_BASE_URL+this.info.lostImage),
-                getImageInfo(res1.data.imageUrl)
+                getImageInfo(QINIU_BASE_URL+this.info.image),
+                getImageInfo(res1.data.data)
             ])
+            console.log(res)
             this.width=res[0].width/3;
             this.height=res[0].height/3;
             ctx.drawImage(res[0].path, 0, 0, this.width, this.height);
@@ -71,22 +71,25 @@ export default {
         },
         async _drawAnswer(){//问答页面绘制
             showLoading('生成图片中');
-            let res1=await getIndexQRCode({repoId:this.repoId})
+            let res1=await getIndexQRCode({id: this.info.id})
             let res=await Promise.all([
                 getImageInfo(questionBgImage),
-                getImageInfo(res1.data.imageUrl)
+                getImageInfo(res1.data.data || '')
             ])
             this.width=res[0].width/3;
             this.height=res[0].height/3;
             ctx.drawImage(res[0].path, 0, 0, this.width, this.height);
-            ctx.setFontSize(14)   
+
+            ctx.setFontSize(14)
             for(let i=0;i<this.questionArr.length;i++){
                 ctx.fillText(this.questionArr[i], 20, 80+(i+1)*20)
             }
+
             ctx.setFontSize(12)  
             for(let i=0;i<this.answerArr.length;i++){
                 ctx.fillText(this.answerArr[i], 50, 134+(i+1)*20)
             }
+
             let footerStart=310
             ctx.drawImage(res[1].path, 138, footerStart-15, 40, 40);
             ctx.draw(true)
@@ -97,20 +100,21 @@ export default {
             this.$emit('cancel')
         },
         _initInfo(){
-            this.showAnswer=this.info.repoAnswer.length>49?this.info.repoAnswer.slice(0,49)+'...':this.info.repoAnswer
+            this.showAnswer=this.info.answer.length>49?this.info.answer.slice(0,49)+'...':this.info.answer
             this.showAnswer=`: ${this.showAnswer}`
-            this.showQuestion=this.info.repoQuestion.length>25?this.info.repoQuestion.slice(0,25)+'...?':this.info.repoQuestion+'?'
-            let questionRows=Math.ceil(this.showQuestion.length/questionMaxLength)
-            let answerRows=Math.ceil(this.showAnswer.length/answerMaxLength)
+            this.showQuestion=this.info.question.length>14?this.info.question.slice(0,14)+'...?':this.info.question+'?'
+            let questionRows=Math.ceil(this.info.question.length/questionMaxLength)
+            let answerRows=Math.ceil(this.info.answer.length/answerMaxLength)
             for (let i=0;i<questionRows;i++){
                 this.questionArr.push(this.showQuestion.substr(questionMaxLength*i,questionMaxLength))
             }
             for (let i=0;i<answerRows;i++){
                 this.answerArr.push(this.showAnswer.substr(answerMaxLength*i,answerMaxLength))
             }
+            console.log(this.questionArr, this.answerArr);
         },
         _initLosts(){
-            this.showDescription=this.info.lostDescription.length>19?this.info.lostDescription.substr(0,19)+'...':this.info.lostDescription
+            this.showDescription=this.info.description.length>19?this.info.description.substr(0,19)+'...':this.info.description
             let decriptionRows=Math.ceil(this.showDescription.length/11)
             for(let i=0;i<decriptionRows;i++){
                 this.describerArr.push(this.showDescription.substr(11*i,11))
@@ -167,7 +171,7 @@ export default {
           line-height: cr(30);
           border: none;
           position: fixed;
-          bottom: cr(40);
+          bottom: cr(20);
           left: 50%;
           transform: translateX(-50%);
           &:after{

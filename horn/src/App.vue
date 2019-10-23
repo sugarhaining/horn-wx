@@ -25,9 +25,8 @@ export default {
     }
   },
   log () {
-    console.log(`log at:${Date.now()}`)
+    console.log(`log at:${Date.now()}`);
   }
-}
 </script>
 
 <style>

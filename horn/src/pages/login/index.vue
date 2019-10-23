@@ -52,17 +52,17 @@ export default {
         async login() {
             try {
                 let res = await managerLogin({
-                    manaPhone: this.user_name,
-                    manaPass: this.user_pass
+                    phone: this.user_name,
+                    password: this.user_pass
                 })
-                if (res.data.errcode === 20004) {
+                if (res.data.code === 20004) {
                     this.user_position = 1;
                     this._setStorage();
                     this._toManager();
-                } else if (res.data.errcode === 20005) {
+                } else if (res.data.code === 20005) {
                     this._setStorage();
                     this._toManager();
-                } else if (res.data.errcode === 20006) {
+                } else if (res.data.code === 20006) {
                     showToast('密码错误')
                 } else {
                     showToast('账号不存在')

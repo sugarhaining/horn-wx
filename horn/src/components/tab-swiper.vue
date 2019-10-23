@@ -8,7 +8,7 @@
         <div class='banner-right'>应用</div>
         <div class='float transition' :class='currPageIndex===0?"float-right":"float-left"'></div>
     </div>
-    <div class='contain' :class='{"transition":isStopTouch}' :style='{left:isStopTouch?offsetLeft:rangeXUnit}'>
+    <div class='contain' :class='{"transition": isStopTouch}' :style='{left: isStopTouch ? offsetLeft: rangeXUnit}'>
         <div class='item'>
             <span>喇叭搜索</span>
             <div class="input">
@@ -56,7 +56,7 @@ export default {
             pages: 2, //tab的数量
             isStopTouch: true, //滑屏是否结束
             broadcastMsg: [],
-            pageIndex:1,
+            pageIndex:0,
             ifShowCanvas:false,
             currList:null,
             autoSearchInfo:'',
@@ -77,22 +77,15 @@ export default {
                 keyword:value
             })
             hideLoading()
-            if(res.data.length===0){
-                showToast('没有相关问答')
+            if(res.data.data.length===0){
+                showToast('相关问答不存在')
             }else{
-                this.infos=res.data;
+                this.infos=res.data.data;
                 this._initInfos()
             }
         },
-        async _autoSearch(id){
-            showLoading('搜索中')
-            let res=await getSearchAnswer({
-                number:id
-            })
-            hideLoading()
-        },
         showCanvas(value){
-            this.currRepoid=value.repoId
+            this.currRepoid=value.id
             this.currList=value;
             this.ifShowCanvas=true;
         },
@@ -114,10 +107,10 @@ export default {
         },
         toggleExpand(info){
             if(info.expand===false){
-                info.show_answer=info.repoAnswer;
+                info.show_answer=info.slice_answer;
                 info.expand=true;
             }else{
-                info.show_answer=info.slice_answer;
+                info.show_answer=info.answer;
                 info.expand=false;
             }
         },
@@ -160,17 +153,18 @@ export default {
                 this.$set(info,'show_answer','');
                 this.$set(info,'slice_answer','');
                 this.$set(info,'expand',false);
-                info.time=stampToDate(info.repoDate);
-                info.slice_answer=info.repoAnswer.length>=52?info.repoAnswer.slice(0,52)+'...':info.repoAnswer;
+                info.time=stampToDate(info.createTime * 1000);
+                info.show_question=info.question.length >= 35 ? info.question.slice(0,35) + '...' : info.question;
+                info.slice_answer=info.answer.length >= 52 ? info.answer.slice(0,52) + '...' : info.answer;
                 info.show_answer=info.slice_answer;
             })
         },
         async _getAnswers(){
                 try{
                     let res=await getBrandAnswer({
-                        pageIndex:this.pageIndex
+                        pageNumber: this.pageIndex
                     });
-                    this.infos=res.data;
+                    this.infos=res.data.data.storehouses;
                     this._initInfos()
                 }catch(e){
                     
@@ -178,7 +172,7 @@ export default {
         },
     },
     async onShow(){
-        this.pageIndex=1;
+        this.pageIndex=0;
         await this._getAnswers()
     },
     async onLoad(options){
@@ -277,6 +271,9 @@ export default {
             margin-bottom: cr(6);
             box-sizing: border-box;
             width: 90%;
+            &:last-child {
+              margin-bottom: cr(66);
+            }
         }
 
     }
@@ -291,7 +288,7 @@ export default {
 }
 
 .transition {
-    transition: all 0.2s
+    transition: all 0.14s
 }
 .add-btn {
     width: cr(50);

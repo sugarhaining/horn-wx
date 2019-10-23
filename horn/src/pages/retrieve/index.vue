@@ -2,11 +2,11 @@
    <div class='main-wrap bg-img'>
      <div class="float-modal">
          <div class="title">
-             <img :src="QINIU_BASE_URL+info.lostImage">
-             {{info.lostDescription}}
+             <img :src="QINIU_BASE_URL+info.image">
+             {{info.description}}
          </div>
-        <div class="contact">
-            <div>联系&nbsp;{{info.lostContact}}:<span>{{info.lostInformation}}</span></div>
+        <div class="contact" v-if='info.information'>
+            <div>联系&nbsp;{{info.contact}}:<span>{{info.information}}</span></div>
             <div class="btn" @click.stop="copy">
                 <s-button value='复制' size='small'></s-button>
             </div>
@@ -38,7 +38,7 @@ export default {
   data () { 
     return {
         info:null,
-        sessionid:'',
+        userId:'',
         ifCanvasShow:false,
         QINIU_BASE_URL
     }
@@ -54,10 +54,10 @@ export default {
         showModal('提示','确认删除失物？').then(async res=>{
             if(res.confirm){
                 let res=await deleteLosts({
-                    lostId:this.info.lostId,
-                    sessionId:this.sessionid
+                    id:this.info.id,
+                    userId:this.userId
                 })
-                if(res.data.errcode===20008){
+                if(res.data.code === 20008){
                     showToast('一天最多删除两次失物哦')
                 }else{
                     showToast('删除成功','success')
@@ -67,10 +67,10 @@ export default {
         })
       },
       copy(){
-          setClipboardData(this.info.lostInformation)
+          setClipboardData(this.info.information);
       },
-      _getLocalSession(){
-          this.sessionid=getStorageSync('sessionId') || 'free sessionid'
+      _getLocaluserId(){
+          this.userId=getStorageSync('userId') || 'free userId'
       },
       _jumpLost(){
           navigatorBack(1)
@@ -80,7 +80,7 @@ export default {
       sButton,shareCanvas
   },
     onShow(){
-        this._getLocalSession()
+        this._getLocaluserId()
         this.info=this.$mp.query;
     }
 }
@@ -96,6 +96,7 @@ export default {
         width: 94%;
         padding: cr(10);
         box-sizing: border-box;
+        word-break: break-all;
         >img{
           width: cr(120);
           height: cr(120);

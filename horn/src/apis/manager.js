@@ -77,7 +77,7 @@ function answerQuestions(data){
  * @returns
  */
 function addQuestions(data){
-    return ajax(_setUrl('/managers/repositories'),data,'POST')
+    return ajax(_setUrl('/managers/storehouses'),data,'POST')
 }
 
 /**
